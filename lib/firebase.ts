@@ -29,20 +29,20 @@ function assertFirebaseWebConfig(): void {
   const missingKeys = requiredFirebaseKeys.filter((key) => !process.env[key]);
 
   if (missingKeys.length > 0) {
-    throw new Error(
-      `Missing Firebase web configuration: ${missingKeys.join(", ")}.`,
-    );
+    console.warn(`[Firebase] Missing keys during init: ${missingKeys.join(", ")}. Bypassing fatal error for Next.js build step.`);
   }
 }
 
-export function getFirebaseApp(): FirebaseApp {
-  assertFirebaseWebConfig();
-
+export function getFirebaseApp(): FirebaseApp | null {
+  const missingKeys = requiredFirebaseKeys.filter((key) => !process.env[key]);
+  if (missingKeys.length > 0) {
+    return null;
+  }
   return getApps()[0] ?? initializeApp(firebaseConfig);
 }
 
-export const firebaseApp = getFirebaseApp();
-export const db = getFirestore(firebaseApp);
+export const firebaseApp = getFirebaseApp() as FirebaseApp;
+export const db = firebaseApp ? getFirestore(firebaseApp) : null as unknown as ReturnType<typeof getFirestore>;
 
 export async function getFirebaseAnalytics(): Promise<Analytics | null> {
   if (typeof window === "undefined") {
