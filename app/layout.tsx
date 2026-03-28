@@ -22,9 +22,13 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "PromptWars | Universal Emergency Interpreter",
+  title: "Triage Signal — AI Emergency Intelligence",
   description:
     "Turn messy, panicked, multilingual emergency descriptions into structured, verified, life-saving action cards — powered by AI triage.",
+  icons: {
+    icon: "/triage_signal_logo.png",
+    apple: "/triage_signal_logo.png",
+  },
 };
 
 export default function RootLayout({

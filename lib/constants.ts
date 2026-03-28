@@ -79,3 +79,25 @@ export const DEMO_SAMPLES = [
     text: "road blocked, smoke, people are running, flooding in basement",
   },
 ] as const;
+
+/* ── Output language options ── */
+export const OUTPUT_LANGUAGES = [
+  { code: "en", label: "English", native: "English" },
+  { code: "hi", label: "Hindi", native: "हिन्दी" },
+  { code: "te", label: "Telugu", native: "తెలుగు" },
+  { code: "ta", label: "Tamil", native: "தமிழ்" },
+  { code: "es", label: "Spanish", native: "Español" },
+  { code: "fr", label: "French", native: "Français" },
+  { code: "ar", label: "Arabic", native: "العربية" },
+  { code: "zh", label: "Chinese", native: "中文" },
+  { code: "pt", label: "Portuguese", native: "Português" },
+  { code: "ru", label: "Russian", native: "Русский" },
+  { code: "ja", label: "Japanese", native: "日本語" },
+  { code: "de", label: "German", native: "Deutsch" },
+  { code: "ko", label: "Korean", native: "한국어" },
+  { code: "bn", label: "Bengali", native: "বাংলা" },
+  { code: "ur", label: "Urdu", native: "اردو" },
+  { code: "mr", label: "Marathi", native: "मराठी" },
+  { code: "kn", label: "Kannada", native: "ಕನ್ನಡ" },
+  { code: "ml", label: "Malayalam", native: "മലയാളം" },
+] as const;

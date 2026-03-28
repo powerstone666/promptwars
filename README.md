@@ -41,6 +41,20 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your-measurement-id
 
 For client-side Firebase access, import the configured app and Firestore instance from `lib/firebase.ts`.
 
+## Docker
+
+Build the production image:
+
+```bash
+docker build -t promptwar .
+```
+
+Run it:
+
+```bash
+docker run --rm -p 3000:3000 --env-file .env promptwar
+```
+
 For Google Maps / Places facility routing, also set:
 
 ```bash

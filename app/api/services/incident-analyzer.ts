@@ -41,8 +41,9 @@ export async function analyzeIncident(
   requestId: string,
   languageHint?: string,
   imageBase64?: string,
+  outputLanguage?: string,
 ): Promise<AnalyzeResponse> {
-  const userPrompt = buildUserPrompt(text, languageHint, !!imageBase64);
+  const userPrompt = buildUserPrompt(text, languageHint, !!imageBase64, outputLanguage);
 
   let lastError: Error | null = null;
 

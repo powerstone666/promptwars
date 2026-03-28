@@ -9,6 +9,7 @@ import { WeatherPanel } from "@/components/emergency/weather-panel";
 import type { AnalyzeResponse } from "@/app/api/services/types";
 import { ShieldAlert, ArrowLeft, MapPin } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 type PageState = "idle" | "analyzing" | "result" | "error";
 
@@ -45,7 +46,7 @@ export default function HomePage() {
     );
   }, []);
 
-  const handleAnalyze = useCallback(async (text: string, imageBase64?: string) => {
+  const handleAnalyze = useCallback(async (text: string, imageBase64?: string, outputLanguage?: string) => {
     setState("analyzing");
     setError(null);
     setResult(null);
@@ -54,7 +55,7 @@ export default function HomePage() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, imageBase64 }),
+        body: JSON.stringify({ text, imageBase64, outputLanguage }),
       });
 
       const data = await res.json();
@@ -104,12 +105,18 @@ export default function HomePage() {
             </span>
           </Link>
           <div className="flex items-center gap-2">
-            <ShieldAlert className="size-5 text-[var(--mr-gold)]" aria-hidden="true" />
+            <Image
+              src="/triage_signal_logo.png"
+              alt="Triage Signal logo"
+              width={32}
+              height={32}
+              className="rounded-sm"
+            />
             <span
               className="text-lg font-black italic text-white tracking-widest"
               style={{ fontFamily: "var(--font-headline)" }}
             >
-              EMERGENCY INTERPRETER
+              TRIAGE SIGNAL
             </span>
           </div>
           <div className="flex items-center gap-1">

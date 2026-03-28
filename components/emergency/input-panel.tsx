@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, ImagePlus, X } from "lucide-react";
-import { MAX_INPUT_CHARS } from "@/lib/constants";
+import { Send, Loader2, ImagePlus, X, Globe } from "lucide-react";
+import { MAX_INPUT_CHARS, OUTPUT_LANGUAGES } from "@/lib/constants";
 
 const MAX_IMAGE_SIZE_MB = 5;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 interface InputPanelProps {
-  onSubmit: (text: string, imageBase64?: string) => void;
+  onSubmit: (text: string, imageBase64?: string, outputLanguage?: string) => void;
   isLoading: boolean;
   initialText?: string;
 }
@@ -17,8 +17,11 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
   const [text, setText] = useState(initialText);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [outputLanguage, setOutputLanguage] = useState("en");
+  const [langOpen, setLangOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync when initialText changes (demo sample clicked)
@@ -29,9 +32,22 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
     }
   }, [initialText]);
 
+  // Close language dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const charCount = text.length;
   const isOverLimit = charCount > MAX_INPUT_CHARS;
   const canSubmit = text.trim().length >= 5 && !isOverLimit && !isLoading;
+
+  const selectedLang = OUTPUT_LANGUAGES.find((l) => l.code === outputLanguage) ?? OUTPUT_LANGUAGES[0];
 
   function handleSubmit() {
     if (!canSubmit) return;
@@ -39,7 +55,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
     // Debounce rapid submits
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      onSubmit(text.trim(), imageBase64 ?? undefined);
+      onSubmit(text.trim(), imageBase64 ?? undefined, outputLanguage);
     }, 100);
   }
 
@@ -210,8 +226,65 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
             {imageBase64 ? "Change Image" : "Add Image"}
           </button>
 
+          {/* ── Language selector ── */}
+          <div ref={langRef} className="relative">
+            <button
+              onClick={() => setLangOpen((prev) => !prev)}
+              disabled={isLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)]
+                         border border-white/10 hover:border-[var(--mr-gold)]/30
+                         text-xs font-bold text-[var(--mr-text-muted)] hover:text-white transition-all
+                         disabled:opacity-40 disabled:cursor-not-allowed
+                         focus:outline-none focus:border-[var(--mr-gold)]"
+              aria-label="Select output language"
+              aria-expanded={langOpen}
+              aria-haspopup="listbox"
+            >
+              <Globe className="size-4" />
+              <span>{selectedLang.native}</span>
+              <svg
+                className={`size-3 transition-transform ${langOpen ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {langOpen && (
+              <div
+                className="absolute bottom-full left-0 mb-2 w-56 max-h-60 overflow-y-auto
+                           bg-[var(--mr-surface)] border border-white/10 shadow-xl z-50"
+                role="listbox"
+                aria-label="Output language options"
+              >
+                {OUTPUT_LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setOutputLanguage(lang.code);
+                      setLangOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 text-left text-xs transition-colors
+                               hover:bg-[var(--mr-surface-high)]
+                               ${lang.code === outputLanguage
+                                 ? "text-[var(--mr-gold)] bg-[var(--mr-gold)]/5"
+                                 : "text-[var(--mr-text-muted)]"}`}
+                    role="option"
+                    aria-selected={lang.code === outputLanguage}
+                  >
+                    <span className="font-bold">{lang.native}</span>
+                    <span className="text-[var(--mr-text-dim)]">{lang.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <p id="input-help" className="text-xs text-[var(--mr-text-dim)] hidden sm:block">
-            Supports any language • Drag & drop images •{" "}
+            Drag & drop images •{" "}
             <kbd className="px-1.5 py-0.5 bg-[var(--mr-surface-high)] text-[var(--mr-text-muted)] text-[10px]">
               ⌘ Enter
             </kbd>

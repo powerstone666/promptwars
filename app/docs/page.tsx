@@ -107,12 +107,21 @@ export default function Home() {
       {/* ─── STICKY NAV ─── */}
       <nav className="fixed top-0 w-full flex justify-between items-center px-8 py-4 bg-[var(--mr-base)] z-50 border-b border-[var(--mr-gold)]/10">
         <div className="flex items-center gap-12">
-          <span
-            className="text-2xl font-black italic text-white tracking-widest"
-            style={{ fontFamily: "var(--font-headline)" }}
-          >
-            PROMPTWAR
-          </span>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/triage_signal_logo.png"
+              alt="Triage Signal logo"
+              width={36}
+              height={36}
+              className="rounded-sm"
+            />
+            <span
+              className="text-2xl font-black italic text-white tracking-widest"
+              style={{ fontFamily: "var(--font-headline)" }}
+            >
+              TRIAGE SIGNAL
+            </span>
+          </div>
           <div className="hidden md:flex gap-8 text-sm">
             {navLinks.map((link) => (
               <a
@@ -170,16 +179,16 @@ export default function Home() {
             className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black italic text-white leading-none tracking-tighter hero-glow mb-6"
             style={{ fontFamily: "var(--font-headline)" }}
           >
-            IGNITE YOUR{" "}
-            <span className="text-[var(--mr-gold)]">PROMPTS</span>
+            DECODE THE{" "}
+            <span className="text-[var(--mr-gold)]">CHAOS</span>
           </h1>
           <p
             className="text-lg md:text-xl italic text-[var(--mr-text-muted)] mb-10 max-w-xl"
             style={{ fontFamily: "var(--font-headline)" }}
           >
-            The AI battle begins. 20+ skills, 6 MCP tools, 3 plugins. Deploy
-            your arsenal in the most high-stakes hackathon environment ever
-            built.
+            AI-powered emergency triage intelligence. Upload images, get
+            nearby hospitals, real-time weather, and life-saving action
+            cards — in seconds.
           </p>
           <div className="flex items-center gap-8">
             <Link
@@ -187,7 +196,7 @@ export default function Home() {
               className="group flex items-center gap-4 bg-[var(--mr-gold)] text-[var(--mr-on-gold)] px-8 md:px-10 py-4 md:py-5 font-black italic text-xl md:text-2xl tracking-widest active:scale-95 transition-all hover:shadow-[0_0_40px_rgba(255,215,0,0.3)]"
               style={{ fontFamily: "var(--font-headline)" }}
             >
-              <span>PLAY NOW</span>
+              <span>LAUNCH APP</span>
               <span className="flex items-center justify-center border-l border-[var(--mr-on-gold)]/20 pl-4">
                 <Play className="size-5 fill-current" />
               </span>
@@ -311,7 +320,7 @@ export default function Home() {
               className="hidden lg:block absolute -top-16 left-1/2 -translate-x-1/2 font-black italic text-white/[0.03] text-[10rem] tracking-[2rem] select-none pointer-events-none"
               style={{ fontFamily: "var(--font-headline)" }}
             >
-              PW
+              TS
             </span>
             <h2
               className="text-5xl md:text-6xl font-black italic text-white mb-4"
@@ -450,17 +459,26 @@ export default function Home() {
         <div className="skew-y-1 max-w-7xl mx-auto px-6 md:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-12 mb-16">
             <div className="flex flex-col items-center md:items-start">
-              <span
-                className="text-3xl md:text-4xl font-black italic text-white mb-2"
-                style={{ fontFamily: "var(--font-headline)" }}
-              >
-                PROMPTWAR
-              </span>
+              <div className="flex items-center gap-3 mb-2">
+                <Image
+                  src="/triage_signal_logo.png"
+                  alt="Triage Signal logo"
+                  width={40}
+                  height={40}
+                  className="rounded-sm"
+                />
+                <span
+                  className="text-3xl md:text-4xl font-black italic text-white"
+                  style={{ fontFamily: "var(--font-headline)" }}
+                >
+                  TRIAGE SIGNAL
+                </span>
+              </div>
               <p
                 className="text-xs text-[var(--mr-gold)] tracking-[0.3em] uppercase font-bold"
                 style={{ fontFamily: "var(--font-label)" }}
               >
-                Forging the next generation of AI Architects
+                AI Emergency Intelligence Platform
               </p>
             </div>
             <div className="flex gap-8">
@@ -485,7 +503,7 @@ export default function Home() {
               className="text-xs font-medium uppercase tracking-[0.3em] text-slate-500"
               style={{ fontFamily: "var(--font-label)" }}
             >
-              ©2026 PROMPTWAR
+              ©2026 TRIAGE SIGNAL
             </span>
             <div className="flex gap-8 md:gap-12">
               {["Terms of Use", "Privacy Policy", "Support"].map((link) => (

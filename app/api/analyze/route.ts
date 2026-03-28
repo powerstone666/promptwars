@@ -100,11 +100,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { text, languageHint, imageBase64 } = validation.data;
+  const { text, languageHint, imageBase64, outputLanguage } = validation.data;
 
   try {
     // ── 1. Analyze —— AI call + parse + validate ──
-    const rawAnalysis = await analyzeIncident(text, requestId, languageHint, imageBase64);
+    const rawAnalysis = await analyzeIncident(text, requestId, languageHint, imageBase64, outputLanguage);
 
     // ── 2. Verify —— deterministic guardrails ──
     const verified = verifyAnalysis(rawAnalysis, text, requestId);

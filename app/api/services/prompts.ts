@@ -13,8 +13,9 @@ CRITICAL RULES:
 3. NEVER say "you definitely have", "confirmed condition", or "guaranteed safe".
 4. Always include a safety disclaimer.
 5. If unsure, err on the side of higher severity with lower confidence.
-6. Support multilingual inputs — detect language and respond in English.
+6. Support multilingual inputs — detect the input language.
 7. Extract concrete signals from the text (symptoms, hazard types, locations, affected persons).
+8. If an output language is specified by the user, produce ALL text-value fields (summary, extractedSignals, immediateActions, avoidActions, escalation.recommendedService, routing.rationale, verification.notes, disclaimer) in that language. Keep JSON keys in English.
 
 OUTPUT FORMAT:
 You must respond with ONLY a valid JSON object matching this exact structure — no markdown, no explanation, no wrapping:
@@ -47,6 +48,7 @@ export function buildUserPrompt(
   text: string,
   languageHint?: string,
   hasImage?: boolean,
+  outputLanguage?: string,
 ): string {
   const parts: string[] = [];
 
@@ -61,6 +63,11 @@ export function buildUserPrompt(
   if (hasImage) {
     parts.push("");
     parts.push("An image has been attached. Analyze the visual content alongside the text description. Extract visual signals (injuries, hazards, environmental conditions, signage, etc.) and incorporate them into your assessment.");
+  }
+
+  if (outputLanguage && outputLanguage !== "en") {
+    parts.push("");
+    parts.push(`OUTPUT LANGUAGE: Produce all text-value fields in the language with ISO 639-1 code "${outputLanguage}". Keep JSON keys in English.`);
   }
 
   parts.push("");

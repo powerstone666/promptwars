@@ -20,6 +20,7 @@ export const analyzeRequestSchema = z.object({
     .max(MAX_INPUT_CHARS, `Input must be under ${MAX_INPUT_CHARS} characters`)
     .transform((s) => s.trim()),
   languageHint: z.string().max(10).optional(),
+  outputLanguage: z.string().max(10).default("en"),
   imageBase64: z
     .string()
     .max(MAX_IMAGE_BASE64_CHARS, "Image is too large (max ~5MB)")
