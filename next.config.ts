@@ -1,16 +1,7 @@
-import withMotionwind from "motionwind-react/next";
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  outputFileTracingRoot: process.cwd(),
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https" as const,
-        hostname: "lh3.googleusercontent.com",
-        pathname: "/aida-public/**",
-      },
-    ],
-  },
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
 };
 
-export default withMotionwind(nextConfig);
+export default nextConfig;
