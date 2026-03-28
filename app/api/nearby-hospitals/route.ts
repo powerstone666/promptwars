@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { rankNearbyFacilities } from "./ranking";
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -20,6 +21,7 @@ export interface NearbyHospital {
   lng: number;
   placeId: string;
   mapsUrl: string;
+  types?: string[];
 }
 
 /**
@@ -42,6 +44,10 @@ export async function GET(request: NextRequest) {
   const lat = parseFloat(searchParams.get("lat") ?? "");
   const lng = parseFloat(searchParams.get("lng") ?? "");
   const radius = parseInt(searchParams.get("radius") ?? "5000", 10);
+  const incidentType = searchParams.get("incidentType");
+  const severity = searchParams.get("severity");
+  const facilityType = searchParams.get("facilityType");
+  const recommendedService = searchParams.get("recommendedService");
 
   if (isNaN(lat) || isNaN(lng)) {
     return NextResponse.json(
@@ -63,6 +69,20 @@ export async function GET(request: NextRequest) {
     url.searchParams.set("location", `${lat},${lng}`);
     url.searchParams.set("radius", String(Math.min(radius, 50000)));
     url.searchParams.set("type", "hospital");
+    
+    // Dynamically inject keyword for better specialization (overriding default dental/eye clinics)
+    let keyword = "emergency hospital";
+    if (facilityType && !["hospital", "emergency department"].includes(facilityType.toLowerCase())) {
+      keyword = facilityType;
+    } else if (incidentType) {
+      const lowerReq = incidentType.toLowerCase();
+      if (/heart|cardiac|chest pain/i.test(lowerReq)) keyword = "heart hospital";
+      else if (/burn|fire/i.test(lowerReq)) keyword = "burn center";
+      else if (/child|pediatric/i.test(lowerReq)) keyword = "pediatric hospital";
+      else if (/eye/i.test(lowerReq)) keyword = "eye hospital";
+      else if (/tooth|dental/i.test(lowerReq)) keyword = "dental clinic";
+    }
+    url.searchParams.set("keyword", keyword);
     url.searchParams.set("key", GOOGLE_MAPS_API_KEY);
 
     const res = await fetch(url.toString());
@@ -118,18 +138,19 @@ export async function GET(request: NextRequest) {
           lng: placeLng ?? 0,
           placeId: place.place_id ?? "",
           mapsUrl: `https://www.google.com/maps/place/?q=place_id:${place.place_id}`,
+          types: Array.isArray(place.types) ? place.types : undefined,
         };
       }),
     );
 
-    // Sort by distance
-    hospitals.sort((a, b) => {
-      const da = parseFloat(a.distance ?? "999");
-      const db = parseFloat(b.distance ?? "999");
-      return da - db;
+    const rankedHospitals = rankNearbyFacilities(hospitals, {
+      incidentType,
+      severity,
+      facilityType,
+      recommendedService,
     });
 
-    return NextResponse.json({ hospitals });
+    return NextResponse.json({ hospitals: rankedHospitals });
   } catch (err) {
     console.error("[nearby-hospitals] Error:", err);
     return NextResponse.json(

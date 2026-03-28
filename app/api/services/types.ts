@@ -29,9 +29,11 @@ export type VerificationStatus =
 
 export interface AnalyzeRequest {
   /** The raw messy input from the user */
-  text: string;
+  text?: string;
   /** Optional language hint (ISO 639-1) */
   languageHint?: string;
+  /** Optional recorded voice input as a data URL */
+  audioBase64?: string;
 }
 
 export interface Escalation {

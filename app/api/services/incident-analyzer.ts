@@ -37,13 +37,20 @@ function extractJSON(raw: string): string {
  * Analyze messy real-world input and return structured emergency triage.
  */
 export async function analyzeIncident(
-  text: string,
+  text: string | undefined,
   requestId: string,
   languageHint?: string,
   imageBase64?: string,
+  audioBase64?: string,
   outputLanguage?: string,
 ): Promise<AnalyzeResponse> {
-  const userPrompt = buildUserPrompt(text, languageHint, !!imageBase64, outputLanguage);
+  const userPrompt = buildUserPrompt(
+    text,
+    languageHint,
+    !!imageBase64,
+    !!audioBase64,
+    outputLanguage,
+  );
 
   let lastError: Error | null = null;
 
@@ -53,7 +60,13 @@ export async function analyzeIncident(
         logger.warn(`[${requestId}] Retry attempt ${attempt}/${AI_MAX_RETRIES}`);
       }
 
-      const raw = await callLLM(SYSTEM_PROMPT, userPrompt, requestId, imageBase64);
+      const raw = await callLLM(
+        SYSTEM_PROMPT,
+        userPrompt,
+        requestId,
+        imageBase64,
+        audioBase64,
+      );
       const cleaned = extractJSON(raw);
 
       let parsed: unknown;

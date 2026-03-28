@@ -12,11 +12,11 @@ import { MAX_INPUT_CHARS } from "@/lib/constants";
 
 /** Max image size in base64 chars (~5MB file ≈ ~7MB base64) */
 const MAX_IMAGE_BASE64_CHARS = 7_000_000;
+const MAX_AUDIO_BASE64_CHARS = 15_000_000;
 
 export const analyzeRequestSchema = z.object({
   text: z
     .string()
-    .min(5, "Input must be at least 5 characters")
     .max(MAX_INPUT_CHARS, `Input must be under ${MAX_INPUT_CHARS} characters`)
     .transform((s) => s.trim()),
   languageHint: z.string().max(10).optional(),
@@ -29,6 +29,36 @@ export const analyzeRequestSchema = z.object({
       "Image must be a valid data URI (data:image/...)",
     )
     .optional(),
+  audioBase64: z
+    .string()
+    .max(MAX_AUDIO_BASE64_CHARS, "Audio is too large")
+    .refine(
+      (s) => {
+        const value = s.trim();
+        return value.length > 0 && (value.startsWith("data:") || /^[A-Za-z0-9+/=\s]+$/.test(value));
+      },
+      "Audio must be a valid base64 audio payload",
+    )
+    .optional(),
+}).superRefine((data, ctx) => {
+  const hasText = !!data.text?.trim();
+  const hasAudio = !!data.audioBase64;
+
+  if (!hasText && !hasAudio) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Provide either text or recorded audio",
+      path: ["text"],
+    });
+  }
+
+  if (hasText && data.text!.trim().length < 5) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Input must be at least 5 characters",
+      path: ["text"],
+    });
+  }
 });
 
 export type AnalyzeRequestInput = z.infer<typeof analyzeRequestSchema>;

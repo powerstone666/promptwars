@@ -22,12 +22,12 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Triage Signal — AI Emergency Intelligence",
+  title: "rakshak ai — AI Emergency Intelligence",
   description:
     "Turn messy, panicked, multilingual emergency descriptions into structured, verified, life-saving action cards — powered by AI triage.",
   icons: {
-    icon: "/triage_signal_logo.png",
-    apple: "/triage_signal_logo.png",
+    icon: "/rakshak_ai_logo.png",
+    apple: "/rakshak_ai_logo.png",
   },
 };
 

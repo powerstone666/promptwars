@@ -1,8 +1,8 @@
-# 🛡️ Triage Signal — AI Emergency Intelligence
+# 🛡️ rakshak ai — AI Emergency Intelligence
 
 > Turn messy, panicked, multilingual emergency descriptions into structured, verified, life-saving action cards — powered by AI triage.
 
-![Triage Signal Logo](./public/triage_signal_logo.png)
+![rakshak ai Logo](./public/rakshak_ai_logo.png)
 
 ## ✨ Features
 
@@ -56,6 +56,8 @@ Create a `.env` file with the following keys:
 
 ```bash
 # ── Required: LLM Provider ──
+# Must point to an OpenAI-compatible provider/model that supports
+# chat-completions audio input (`input_audio`) if you want voice recording to work.
 LITELLM_API_KEY=your-litellm-api-key
 LITELLM_BASE_URL=https://your-litellm-proxy.example.com
 MODEL_NAME=gpt-4o
@@ -71,6 +73,8 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
 NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
 ```
+
+For voice input, there is no separate `VOICE_API_KEY` in this app. The feature reuses the existing AI provider config above. The important requirement is that `LITELLM_BASE_URL` and `MODEL_NAME` must target a provider/model that accepts audio input in chat completions. If the configured provider is text-only, text and image analysis will work but recorded voice input will fail.
 
 ---
 
@@ -112,7 +116,7 @@ main/
 │   ├── firebase.ts                 # Firebase client setup
 │   └── utils.ts                    # Tailwind CSS utilities
 └── public/
-    └── triage_signal_logo.png      # App logo
+    └── rakshak_ai_logo.png      # App logo
 ```
 
 ### Data Flow

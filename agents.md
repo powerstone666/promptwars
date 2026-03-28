@@ -1,157 +1,283 @@
-# Triage Signal — AI Agent Guide
-
-## Project Overview
-
-**Triage Signal** is an AI-powered emergency intelligence platform built with Next.js 16.2.1. It converts messy, panicked, multilingual emergency descriptions (text and images) into structured, verified, life-saving action cards.
+# Project Overview for AI Agents
 
 ## Project Structure
 
 ```
-main/
-├── app/
-│   ├── page.tsx                        # Emergency triage UI (root /)
-│   ├── docs/page.tsx                   # Landing/docs page (/docs)
-│   ├── layout.tsx                      # Root layout (fonts, metadata, Toaster)
-│   ├── globals.css                     # Design system tokens + animations
-│   ├── api/
-│   │   ├── analyze/route.ts            # POST /api/analyze — main triage endpoint
-│   │   ├── nearby-hospitals/route.ts   # GET — Google Maps Places hospital lookup
-│   │   ├── weather/route.ts            # GET — Open-Meteo weather data
-│   │   ├── health/route.ts             # GET — Health check
-│   │   └── services/                   # Backend service layer
-│   │       ├── ai-provider.ts          # LLM client (multimodal vision)
-│   │       ├── incident-analyzer.ts    # Triage orchestrator (retry + parse)
-│   │       ├── prompts.ts              # System/user prompt templates
-│   │       ├── schemas.ts              # Zod request/response schemas
-│   │       ├── verifier.ts             # Deterministic safety guardrails
-│   │       ├── action-composer.ts      # Action enrichment logic
-│   │       ├── logger.ts               # Structured JSON logger
-│   │       ├── logger.test.ts          # Logger unit tests
-│   │       ├── types.ts                # TypeScript interfaces
-│   │       └── README.md               # Services documentation
-├── components/
-│   ├── emergency/                      # Emergency-specific components
-│   │   ├── input-panel.tsx             # Text + image + language selector
-│   │   ├── result-card.tsx             # Triage result card
-│   │   ├── action-list.tsx             # Immediate actions list
-│   │   ├── verification-panel.tsx      # AI verification status
-│   │   ├── nearby-hospitals.tsx        # Hospital listing
-│   │   ├── weather-panel.tsx           # Weather conditions
-│   │   ├── demo-samples.tsx            # Demo scenario cards
-│   │   └── share-panel.tsx             # Result sharing
-│   └── ui/                             # shadcn/ui primitives
-│       ├── button.tsx
-│       └── card.tsx
-├── lib/
-│   ├── constants.ts                    # App constants, severity config, languages
-│   ├── firebase.ts                     # Firebase Web SDK client
-│   └── utils.ts                        # Tailwind CSS utilities (cn)
-├── public/
-│   └── triage_signal_logo.png          # App logo (shield + ECG pulse)
-├── .env.example                        # Environment template
-├── package.json                        # Dependencies & scripts
-├── next.config.ts                      # Next.js config (motionwind wrapper)
-├── tsconfig.json                       # TypeScript strict config
-├── components.json                     # shadcn/ui configuration
-└── README.md                           # Project documentation
+promptwar/
+├── skills-lock.json          # Available AI skills
+├── agents.md                # This file
+├── main/                    # Next.js application
+│   ├── .env                 # Local environment variables
+│   ├── .env.example         # Committed environment template
+│   ├── app/                 # Next.js app router
+│   │   ├── layout.tsx      # Root layout
+│   │   ├── page.tsx        # Home page
+│   │   ├── globals.css     # Global styles
+│   │   ├── favicon.ico
+│   │   ├── api/            # API routes
+│   │   │   ├── services/   # Service layer
+│   │   │   │   ├── logger.ts       # Object-oriented logging service
+│   │   │   │   ├── logger.test.ts  # Logger test file
+│   │   │   │   └── README.md       # Services documentation
+│   │   │   └── health/     # Health check endpoint
+│   │   │       └── route.ts
+│   ├── components/         # React components
+│   │   └── ui/            # shadcn/ui components
+│   │       ├── button.tsx
+│   │       └── card.tsx
+│   ├── lib/               # Utility functions
+│   │   ├── firebase.ts    # Firebase Web SDK client setup
+│   │   └── utils.ts       # Tailwind CSS utilities
+│   ├── public/            # Static assets
+│   ├── scripts/           # Utility scripts
+│   │   └── run-imagen-mcp.mjs
+│   ├── package.json       # Dependencies & scripts
+│   ├── package-lock.json  # Dependency lock file
+│   ├── next.config.ts     # Next.js configuration
+│   ├── tsconfig.json      # TypeScript config
+│   ├── next-env.d.ts      # Next.js TypeScript declarations
+│   ├── components.json    # shadcn/ui configuration
+│   ├── eslint.config.mjs  # ESLint configuration
+│   ├── postcss.config.mjs # PostCSS configuration
+│   ├── README.md          # Project README
+│   └── .gitignore         # Git ignore file
 ```
+
+## Available AI Skills
+
+### Project-local skills
+
+These are the skills explicitly available for this repository and should be preferred when the task matches them:
+
+1. **brainstorming** - Creative ideation and planning before implementation
+2. **shadcn** - shadcn/ui component management and composition
+3. **tailwind-design-system** - Tailwind CSS design system work
+4. **ui-ux-pro-max** - UI/UX design and review support
+
+### Session-wide Codex skills
+
+These skills are also available to the agent in the current Codex environment and can be used when the task matches:
+
+1. **agent-browser** - Browser automation for website interaction and scraping
+2. **find-skills** - Discover/install additional skills
+3. **next-best-practices** - Next.js architecture and App Router best practices
+4. **playwright** - Browser automation and UI-flow debugging
+5. **security-best-practices** - Security-focused code review and hardening
+6. **security-ownership-map** - Security ownership and bus-factor analysis
+7. **security-threat-model** - Repository-grounded threat modeling
+8. **senior-developer** - Maintainable implementation and refactoring guidance
+9. **supabase-postgres-best-practices** - Postgres performance and schema guidance
+10. **vercel-composition-patterns** - Scalable React composition patterns
+11. **vercel-react-best-practices** - React and Next.js performance guidance
+12. **web-design-guidelines** - UI/accessibility/design guideline review
+13. **openai-docs** - Official OpenAI product and API documentation workflows
+14. **plugin-creator** - Codex plugin scaffolding and metadata setup
+15. **skill-creator** - Create or improve Codex skills
+16. **skill-installer** - Install curated or repository-hosted skills
+
+This list reflects the currently available non-image Codex skills for this workspace. Image generation is handled through `Image-MCP` rather than an `imagegen` skill entry.
+
+### Skill usage rules
+
+- If a user explicitly names a skill, the agent should use it.
+- If a task clearly matches a skill description, the agent should use that skill without waiting for the user to restate it.
+- For creative feature work, UI changes, or behavior changes, use `brainstorming` first before implementation.
+- For code changes, prefer `senior-developer` when maintainability or refactoring quality matters.
+
+## Codex-only Plugins
+
+These plugins are available in the local Codex plugin environment and should be treated as Codex-only capabilities, not repository-native features:
+
+1. **Build Web Apps** - Workflows for UI review, React improvements, payments, database design, and deployment support
+2. **Game Studio** - Browser game design, prototyping, asset pipeline, and playtesting workflows
+3. **Vercel** - Vercel ecosystem guidance with Codex-compatible skills and MCP integration
+
+### Plugin usage rules
+
+- These plugins are only for Codex.
+- Do not describe plugin capabilities as built into this repository unless the codebase actually contains that implementation.
+- Use plugin features only when the user task matches the plugin domain.
+
+## MCP and Agent Tooling
+
+### MCP status in this workspace
+
+- No MCP resources or MCP resource templates are currently advertised by configured servers in this session.
+- Agents should not assume repository-specific MCP data sources exist unless they appear in the active session.
+
+### MCP/tooling available to the agent runtime
+
+- `Image-MCP` - User-provided MCP for image generation tasks; use this path for image creation when it is available in the active MCP session
+- `prompt-doctor` - Prompt enhancement and task reframing
+- Local execution tools for terminal commands, patch application, plan updates, and image viewing
+- Sub-agent orchestration tools for spawning, messaging, waiting on, and closing agents
+- `GitKraken` - Git operations, PR management, issue tracking, code review, and branch management (only for antigravity)
+- `StitchMCP` - UI design system management, screen generation from text prompts, screen editing, and design variant generation (only for antigravity)
+
+### Guidance for agents
+
+- Prefer local repository inspection first.
+- Use skills when the request matches the skill trigger.
+- Use `Imagen MCP` for image generation tasks instead of treating image generation as a built-in skill in this repository.
+- Use MCP resources only when they are actually available in the active session.
+- Do not claim a tool, MCP server, or skill is available unless it is present in the current environment.
 
 ## Technology Stack
 
-- **Next.js 16.2.1** with App Router & TypeScript
-- **Tailwind CSS v4** with postCSS
-- **shadcn/ui** component library
-- **LiteLLM** for LLM API (OpenAI Vision format, multimodal)
-- **Zod v4** for schema validation at all boundaries
-- **Google Maps Places API** for nearby hospital routing
-- **Open-Meteo** for real-time weather data
-- **React 19.2.4** with hooks-based state management
-- **Lucide React** for iconography
-- **Sonner** for toast notifications
-- **Motion + Motionwind** for animations
+### Core Framework
 
-## Key Features for AI Agents
+- **Next.js 16.2.1** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS v4** - Utility-first CSS
+- **shadcn/ui** - Component library
 
-### 1. Multilingual Support (18 languages)
-The `outputLanguage` parameter flows through the entire pipeline:
-- **Frontend**: `InputPanel` → language selector dropdown → `onSubmit(text, image, outputLanguage)`
-- **API Route**: `route.ts` extracts `outputLanguage` from request body
-- **Analyzer**: `incident-analyzer.ts` passes it to `buildUserPrompt()`
-- **Prompts**: `prompts.ts` appends `OUTPUT LANGUAGE:` instruction for non-English
-- **Schema**: `schemas.ts` validates with `z.string().max(10).default("en")`
+### Key Dependencies
 
-Supported: en, hi, te, ta, es, fr, ar, zh, pt, ru, ja, de, ko, bn, ur, mr, kn, ml
+- **React 19.2.4** - UI library
+- **React DOM 19.2.4** - React for web
+- **class-variance-authority** - Component variant management
+- **clsx** - CSS class utilities
+- **tailwind-merge** - Tailwind class merging
+- **tw-animate-css** - CSS animations
+- **lucide-react** - Icon library
+- **radix-ui** - Primitive UI components
+- **motionwind-react** - Animation library
+- **motion** - Animation library
+- **axios** - HTTP client
+- **firebase** - Firebase Web SDK
+- **react-hook-form** - Form management
+- **zod** - Schema validation
+- **sonner** - Toast notifications
+- **litellm** - LLM API unification
 
-### 2. Multimodal Vision Pipeline
-Image data flows as base64 data URIs:
-- **Frontend**: File → FileReader → base64 data URI → `onSubmit(text, imageBase64)`
-- **API Route**: Extracted from request, validated by Zod (max ~7MB base64)
-- **AI Provider**: Sent as OpenAI Vision `image_url` content part
-- **Prompts**: `hasImage` flag triggers visual analysis instructions
+### Development Tools
 
-### 3. Safety Architecture
-```
-Input → Rate Limiter → Zod Validation → AI Call → JSON Parse → Zod Response Validation → Verifier → Action Composer → Output
-```
-- **Rate limiter**: 10 req/min per IP (in-memory)
-- **Verifier**: Blocks diagnostic language, ensures disclaimers, enforces severity thresholds
-- **Safe fallback**: Always returns actionable output even on total AI failure
+- **ESLint** - Code linting
+- **PostCSS** - CSS processing
 
-### 4. Design System
-The UI uses a dark, high-contrast "Marvel Rivals" aesthetic defined in `globals.css`:
-- `--mr-base`: #0a0a14 (dark background)
-- `--mr-gold`: #FFD700 (primary accent)
-- `--mr-cyan`: #00DDFF (secondary accent)
-- `--font-headline`: Space Grotesk (bold italic headers)
-- `--font-label`: Plus Jakarta Sans (labels)
-- `--font-sans`: Inter (body text)
+## Agents used
 
-## Environment Variables
-
-```bash
-# Required
-LITELLM_API_KEY=          # LLM provider API key
-LITELLM_BASE_URL=         # LLM proxy base URL
-MODEL_NAME=               # Model name (e.g., gpt-4o)
-GOOGLE_MAPS_API_KEY=      # Google Maps Places API key
-
-# Optional (Firebase)
-NEXT_PUBLIC_FIREBASE_API_KEY=
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
-NEXT_PUBLIC_FIREBASE_APP_ID=
-```
+Antigravity Gemini Codex Chatgpt GitHub Copilot Claude Opus 4.6 and Cline
 
 ## Available Scripts
 
 ```bash
-npm run dev     # Start development server (Webpack)
-npm run build   # Production build
+npm run dev     # Start development server (uses Webpack)
+npm run build   # Build for production (uses Webpack)
 npm start       # Start production server
 npm run lint    # Run ESLint
 ```
 
-## Agent-Specific Guidance
+## Hackathon Readiness Guide
 
-### Adding a New Language
-1. Add entry to `OUTPUT_LANGUAGES` in `lib/constants.ts`
-2. No backend changes needed — the ISO code is passed directly to the LLM
+### For 3-Hour Hackathon Success
 
-### Adding a New Emergency Feature
-1. Create API route in `app/api/[feature]/route.ts`
-2. Add Zod schemas in `services/schemas.ts`
-3. Create component in `components/emergency/`
-4. Integrate into `app/page.tsx`
+This project is optimized for rapid development during hackathons. Here's how to maximize productivity:
 
-### Modifying AI Behavior
-- System prompt: `services/prompts.ts` → `SYSTEM_PROMPT`
-- User prompt builder: `services/prompts.ts` → `buildUserPrompt()`
-- Safety rules: `services/verifier.ts` → `verifyAnalysis()`
-- Response enrichment: `services/action-composer.ts` → `composeActions()`
+#### 1. **Quick Start Commands**
 
-### Testing
-- Logger tests: `services/logger.test.ts` (existing)
-- Build verification: `npm run build` (TypeScript + static analysis)
-- Manual testing: Use demo scenarios on the home page
+```bash
+# Start development server (auto-reload)
+npm run dev
+
+# Add new shadcn/ui components
+npx shadcn@latest add [component-name]
+
+# Create new API route
+touch app/api/[endpoint]/route.ts
+
+# Create new page
+touch app/[page]/page.tsx
+```
+
+#### 2. **Pre-configured AI Assistant Capabilities**
+
+- **Brainstorming skill**: Use for ideation and planning (`use_skill brainstorming`)
+- **UI/UX Pro Max**: Design and review UI components quickly
+- **shadcn skill**: Rapid component generation and styling
+- **Tailwind Design System**: Consistent styling system
+
+#### 3. **Common Hackathon Project Templates**
+
+Use these as starting points:
+
+**AI Chat Application:**
+
+- Uses `litellm` for LLM API unification
+- Pre-configured with `axios` for API calls
+- `react-hook-form` + `zod` for form validation
+- `sonner` for toast notifications
+
+**Dashboard/Admin Panel:**
+
+- shadcn/ui components ready
+- Tailwind CSS v4 for rapid styling
+- Motionwind for animations
+
+**API Integration Project:**
+
+- Axios pre-installed for HTTP requests
+- TypeScript for type safety
+- Next.js API routes for backend logic
+
+#### 4. **Rapid Development Patterns**
+
+**Component Creation:**
+
+```bash
+# Add common components for hackathon
+npx shadcn@latest add card
+npx shadcn@latest add input
+npx shadcn@latest add button
+npx shadcn@latest add dialog
+npx shadcn@latest add form
+```
+
+**API Route Pattern:**
+
+```typescript
+// app/api/chat/route.ts
+import { NextResponse } from "next/server";
+import { OpenAI } from "openai";
+
+export async function POST(request: Request) {
+  const { message } = await request.json();
+  // Implement your logic here
+  return NextResponse.json({ response: "AI response here" });
+}
+```
+
+#### 5. **Deployment Ready**
+
+- Vercel deployment links in default page
+- Next.js optimized for production
+- Environment variables support
+
+#### 6. **Time-Saving Tips**
+
+1. **First 30 minutes**: Plan using `brainstorming` skill
+2. **Next 60 minutes**: Build core functionality
+3. **Next 60 minutes**: Polish UI with shadcn/ui components
+4. **Last 30 minutes**: Test and deploy
+
+### Recommended Component Stack for Hackathons
+
+```bash
+# Run these commands to add essential components
+npx shadcn@latest add card
+npx shadcn@latest add input
+npx shadcn@latest add button
+npx shadcn@latest add dialog
+npx shadcn@latest add form
+npx shadcn@latest add label
+npx shadcn@latest add select
+npx shadcn@latest add textarea
+```
+
+## Configuration Notes
+
+- Next.js configured with `withMotionwind` wrapper
+- Webpack used instead of Turbopack (macOS ARM64 compatibility)
+- Tailwind CSS v4 with PostCSS
+- TypeScript strict mode enabled
+- **Hackathon-optimized**: All dependencies chosen for rapid development

@@ -45,16 +45,20 @@ You must respond with ONLY a valid JSON object matching this exact structure —
 }`;
 
 export function buildUserPrompt(
-  text: string,
+  text: string | undefined,
   languageHint?: string,
   hasImage?: boolean,
+  hasAudio?: boolean,
   outputLanguage?: string,
 ): string {
   const parts: string[] = [];
 
   parts.push("Analyze the following real-world input and provide structured emergency triage:");
   parts.push("");
-  parts.push(`INPUT: "${text}"`);
+
+  if (text?.trim()) {
+    parts.push(`INPUT: "${text}"`);
+  }
 
   if (languageHint) {
     parts.push(`LANGUAGE HINT: ${languageHint}`);
@@ -63,6 +67,11 @@ export function buildUserPrompt(
   if (hasImage) {
     parts.push("");
     parts.push("An image has been attached. Analyze the visual content alongside the text description. Extract visual signals (injuries, hazards, environmental conditions, signage, etc.) and incorporate them into your assessment.");
+  }
+
+  if (hasAudio) {
+    parts.push("");
+    parts.push("A recorded audio clip has been attached. Transcribe the audio, extract the emergency signals from what is spoken, and use that information in the triage assessment.");
   }
 
   if (outputLanguage && outputLanguage !== "en") {

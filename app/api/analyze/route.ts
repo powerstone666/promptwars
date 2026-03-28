@@ -11,6 +11,8 @@ import { analyzeIncident } from "../services/incident-analyzer";
 import { verifyAnalysis } from "../services/verifier";
 import { composeActions } from "../services/action-composer";
 import { Logger } from "../services/logger";
+import { db, isFirebaseWebConfigured } from "../../../lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import type { AnalyzeResult, AnalyzeError } from "../services/types";
 
 const logger = new Logger({
@@ -100,17 +102,49 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { text, languageHint, imageBase64, outputLanguage } = validation.data;
+  const { text, languageHint, imageBase64, audioBase64, outputLanguage } = validation.data;
 
   try {
     // ── 1. Analyze —— AI call + parse + validate ──
-    const rawAnalysis = await analyzeIncident(text, requestId, languageHint, imageBase64, outputLanguage);
+    const rawAnalysis = await analyzeIncident(
+      text,
+      requestId,
+      languageHint,
+      imageBase64,
+      audioBase64,
+      outputLanguage,
+    );
 
     // ── 2. Verify —— deterministic guardrails ──
-    const verified = verifyAnalysis(rawAnalysis, text, requestId);
+    const verified = verifyAnalysis(rawAnalysis, text ?? "", requestId);
 
     // ── 3. Compose —— enrich with supplementary actions ──
     const final = composeActions(verified);
+
+    // ── 4. Save to Firebase Database ──
+    if (isFirebaseWebConfigured()) {
+      try {
+        await addDoc(collection(db, "triage_history"), {
+          requestId,
+          timestamp: serverTimestamp(),
+          ip: ip ?? "unknown",
+          input: {
+            text: text ?? "",
+            hasImage: !!imageBase64,
+            hasAudio: !!audioBase64,
+            languageHint: languageHint ?? null,
+            outputLanguage: outputLanguage ?? "en",
+          },
+          response: final,
+        });
+        logger.info(`[${requestId}] Saved triage record to Firestore`);
+      } catch (dbError) {
+        // Log the error but don't fail the triage response to the user
+        logger.error(`[${requestId}] Error saving to Firestore`, {
+          error: dbError instanceof Error ? dbError.message : "Unknown DB error",
+        });
+      }
+    }
 
     const elapsed = Date.now() - startTime;
     logger.info(`[${requestId}] Analysis complete in ${elapsed}ms`, {

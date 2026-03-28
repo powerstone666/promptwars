@@ -7,9 +7,20 @@ import type { NearbyHospital } from "@/app/api/nearby-hospitals/route";
 interface NearbyHospitalsPanelProps {
   lat: number;
   lng: number;
+  incidentType?: string;
+  severity?: string;
+  facilityType?: string | null;
+  recommendedService?: string | null;
 }
 
-export function NearbyHospitalsPanel({ lat, lng }: NearbyHospitalsPanelProps) {
+export function NearbyHospitalsPanel({
+  lat,
+  lng,
+  incidentType,
+  severity,
+  facilityType,
+  recommendedService,
+}: NearbyHospitalsPanelProps) {
   const [hospitals, setHospitals] = useState<NearbyHospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +28,28 @@ export function NearbyHospitalsPanel({ lat, lng }: NearbyHospitalsPanelProps) {
   useEffect(() => {
     async function fetchHospitals() {
       try {
-        const res = await fetch(`/api/nearby-hospitals?lat=${lat}&lng=${lng}`);
+        const params = new URLSearchParams({
+          lat: String(lat),
+          lng: String(lng),
+        });
+
+        if (incidentType) {
+          params.set("incidentType", incidentType);
+        }
+
+        if (severity) {
+          params.set("severity", severity);
+        }
+
+        if (facilityType) {
+          params.set("facilityType", facilityType);
+        }
+
+        if (recommendedService) {
+          params.set("recommendedService", recommendedService);
+        }
+
+        const res = await fetch(`/api/nearby-hospitals?${params.toString()}`);
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.error ?? "Failed to fetch");
@@ -30,7 +62,12 @@ export function NearbyHospitalsPanel({ lat, lng }: NearbyHospitalsPanelProps) {
     }
 
     fetchHospitals();
-  }, [lat, lng]);
+  }, [facilityType, incidentType, lat, lng, recommendedService, severity]);
+
+  const heading =
+    severity === "critical" || severity === "high"
+      ? "Nearby Emergency-Capable Hospitals"
+      : "Nearby Hospitals";
 
   if (loading) {
     return (
@@ -64,7 +101,7 @@ export function NearbyHospitalsPanel({ lat, lng }: NearbyHospitalsPanelProps) {
         style={{ fontFamily: "var(--font-headline)" }}
       >
         <MapPin className="size-4" aria-hidden="true" />
-        Nearby Hospitals
+        {heading}
       </h4>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

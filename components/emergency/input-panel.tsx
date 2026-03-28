@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, ImagePlus, X, Globe } from "lucide-react";
+import { Send, Loader2, ImagePlus, X, Globe, Mic, Square, Trash2 } from "lucide-react";
 import { MAX_INPUT_CHARS, OUTPUT_LANGUAGES } from "@/lib/constants";
+import { readBlobAsDataUrl } from "@/lib/assistant-audio";
 
 const MAX_IMAGE_SIZE_MB = 5;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 interface InputPanelProps {
-  onSubmit: (text: string, imageBase64?: string, outputLanguage?: string) => void;
+  onSubmit: (payload: {
+    text: string;
+    imageBase64?: string;
+    outputLanguage?: string;
+    audioBase64?: string;
+  }) => void;
   isLoading: boolean;
   initialText?: string;
 }
@@ -17,12 +23,18 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
   const [text, setText] = useState(initialText);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [outputLanguage, setOutputLanguage] = useState("en");
   const [langOpen, setLangOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const langRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Sync when initialText changes (demo sample clicked)
   useEffect(() => {
@@ -45,7 +57,9 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
 
   const charCount = text.length;
   const isOverLimit = charCount > MAX_INPUT_CHARS;
-  const canSubmit = text.trim().length >= 5 && !isOverLimit && !isLoading;
+  const hasText = text.trim().length >= 5;
+  const hasAudio = !!audioBlob;
+  const canSubmit = (hasText || hasAudio) && !isOverLimit && !isLoading && !isRecording;
 
   const selectedLang = OUTPUT_LANGUAGES.find((l) => l.code === outputLanguage) ?? OUTPUT_LANGUAGES[0];
 
@@ -54,8 +68,18 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
 
     // Debounce rapid submits
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      onSubmit(text.trim(), imageBase64 ?? undefined, outputLanguage);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const audioBase64 = audioBlob ? await readBlobAsDataUrl(audioBlob) : undefined;
+        onSubmit({
+          text: text.trim(),
+          imageBase64: imageBase64 ?? undefined,
+          outputLanguage,
+          audioBase64,
+        });
+      } catch (error) {
+        setAudioError(error instanceof Error ? error.message : "Failed to process recorded audio.");
+      }
     }, 100);
   }
 
@@ -102,6 +126,75 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
     setImageBase64(null);
     setImageError(null);
   }
+
+  async function startRecording() {
+    if (isLoading || isRecording) return;
+
+    setAudioError(null);
+
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("This browser does not support microphone recording.");
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const recordedBlob = new Blob(audioChunksRef.current, { type: mediaRecorder.mimeType || "audio/webm" });
+
+        if (audioUrl) {
+          URL.revokeObjectURL(audioUrl);
+        }
+
+        setAudioBlob(recordedBlob);
+        setAudioUrl(URL.createObjectURL(recordedBlob));
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      setAudioError(
+        error instanceof Error
+          ? error.message
+          : "Microphone access is required to record voice input.",
+      );
+    }
+  }
+
+  function stopRecording() {
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || !isRecording) return;
+
+    recorder.stop();
+    recorder.stream.getTracks().forEach((track) => track.stop());
+    setIsRecording(false);
+  }
+
+  function deleteRecording() {
+    setAudioBlob(null);
+    setAudioError(null);
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl);
+      setAudioUrl(null);
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (audioUrl) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [audioUrl]);
 
   // Drag & drop
   const [isDragging, setIsDragging] = useState(false);
@@ -198,6 +291,28 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
         <p className="text-xs text-red-400">{imageError}</p>
       )}
 
+      {audioUrl && (
+        <div className="space-y-2">
+          <audio controls src={audioUrl} className="w-full" />
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[var(--mr-text-muted)]">Voice note attached</span>
+            <button
+              onClick={deleteRecording}
+              disabled={isLoading || isRecording}
+              className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-40"
+              aria-label="Delete recorded audio"
+            >
+              <Trash2 className="size-3" />
+              Remove voice note
+            </button>
+          </div>
+        </div>
+      )}
+
+      {audioError && (
+        <p className="text-xs text-red-400">{audioError}</p>
+      )}
+
       {/* Controls row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -224,6 +339,23 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
           >
             <ImagePlus className="size-4" />
             {imageBase64 ? "Change Image" : "Add Image"}
+          </button>
+
+          <button
+            onClick={isRecording ? stopRecording : startRecording}
+            disabled={isLoading}
+            className={`flex items-center gap-2 px-4 py-2 border text-xs font-bold transition-all
+                       disabled:opacity-40 disabled:cursor-not-allowed
+                       focus:outline-none focus:border-[var(--mr-gold)]
+                       ${
+                         isRecording
+                           ? "bg-red-500/10 border-red-500/40 text-red-300 hover:bg-red-500/15"
+                           : "bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)] border-white/10 hover:border-[var(--mr-gold)]/30 text-[var(--mr-text-muted)] hover:text-white"
+                       }`}
+            aria-label={isRecording ? "Stop voice recording" : "Record voice input"}
+          >
+            {isRecording ? <Square className="size-4" /> : <Mic className="size-4" />}
+            {isRecording ? "Stop Recording" : audioBlob ? "Re-record Voice" : "Add Voice"}
           </button>
 
           {/* ── Language selector ── */}
@@ -284,7 +416,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
           </div>
 
           <p id="input-help" className="text-xs text-[var(--mr-text-dim)] hidden sm:block">
-            Drag & drop images •{" "}
+            Drag & drop images • record voice •{" "}
             <kbd className="px-1.5 py-0.5 bg-[var(--mr-surface-high)] text-[var(--mr-text-muted)] text-[10px]">
               ⌘ Enter
             </kbd>
@@ -311,7 +443,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
           ) : (
             <>
               <Send className="size-5" aria-hidden="true" />
-              ANALYZE
+              {audioBlob && !hasText ? "ANALYZE VOICE" : "ANALYZE"}
             </>
           )}
         </button>

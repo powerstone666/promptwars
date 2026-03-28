@@ -46,7 +46,17 @@ export default function HomePage() {
     );
   }, []);
 
-  const handleAnalyze = useCallback(async (text: string, imageBase64?: string, outputLanguage?: string) => {
+  const handleAnalyze = useCallback(async ({
+    text,
+    imageBase64,
+    outputLanguage,
+    audioBase64,
+  }: {
+    text: string;
+    imageBase64?: string;
+    outputLanguage?: string;
+    audioBase64?: string;
+  }) => {
     setState("analyzing");
     setError(null);
     setResult(null);
@@ -55,7 +65,7 @@ export default function HomePage() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, imageBase64, outputLanguage }),
+        body: JSON.stringify({ text, imageBase64, outputLanguage, audioBase64 }),
       });
 
       const data = await res.json();
@@ -67,6 +77,12 @@ export default function HomePage() {
       setResult(data.data);
       setState("result");
     } catch (err) {
+      console.error("[rakshak-ai] analyze failed", {
+        error: err instanceof Error ? err.message : "Unknown error",
+        hasImage: !!imageBase64,
+        hasAudio: !!audioBase64,
+        textLength: text.length,
+      });
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setState("error");
     }
@@ -106,8 +122,8 @@ export default function HomePage() {
           </Link>
           <div className="flex items-center gap-2">
             <Image
-              src="/triage_signal_logo.png"
-              alt="Triage Signal logo"
+              src="/rakshak_ai_logo.png"
+              alt="rakshak ai logo"
               width={32}
               height={32}
               className="rounded-sm"
@@ -116,7 +132,7 @@ export default function HomePage() {
               className="text-lg font-black italic text-white tracking-widest"
               style={{ fontFamily: "var(--font-headline)" }}
             >
-              TRIAGE SIGNAL
+              RAKSHAK AI
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -208,7 +224,14 @@ export default function HomePage() {
               <div className="space-y-6 bg-[var(--mr-surface-low)] border border-white/5 p-6">
                 <WeatherPanel lat={location.lat} lng={location.lng} />
                 <div className="border-t border-white/5 pt-6">
-                  <NearbyHospitalsPanel lat={location.lat} lng={location.lng} />
+                  <NearbyHospitalsPanel
+                    lat={location.lat}
+                    lng={location.lng}
+                    incidentType={result.incidentType}
+                    severity={result.severity}
+                    facilityType={result.routing.facilityType}
+                    recommendedService={result.escalation.recommendedService}
+                  />
                 </div>
               </div>
             )}

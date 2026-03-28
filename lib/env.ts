@@ -29,6 +29,18 @@ export function getModelName(): string {
   return optionalEnv("MODEL_NAME", "gpt-4o-mini");
 }
 
+export function getDashScopeApiKey(): string {
+  return requireEnv("DASHSCOPE_API_KEY");
+}
+
+export function getDashScopeCompatApiUrl(): string {
+  return requireEnv("DASHSCOPE_COMPAT_API_URL");
+}
+
+export function getDashScopeVoiceModel(): string {
+  return optionalEnv("DASHSCOPE_VOICE_MODEL", "qwen3-omni-flash");
+}
+
 export function getFirebaseProjectId(): string {
   return optionalEnv(
     "FIREBASE_PROJECT_ID",
@@ -39,7 +51,7 @@ export function getFirebaseProjectId(): string {
 /* ── Public (safe to read anywhere) ── */
 
 export function getAppName(): string {
-  return optionalEnv("APP_NAME", "PromptWars Emergency Interpreter");
+  return optionalEnv("APP_NAME", "rakshak ai");
 }
 
 export function getMaxInputChars(): number {
