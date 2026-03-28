@@ -1,5 +1,5 @@
 /**
- * Typed environment variable access.
+ * Typed environment variable access for Gemini-oriented app configuration.
  * Server-only vars are only readable inside API routes / server components.
  */
 
@@ -15,13 +15,15 @@ function optionalEnv(key: string, fallback: string): string {
   return process.env[key] ?? fallback;
 }
 
-/* ── Server-only (never exposed to client) ── */
+/* ── Server-only Gemini/runtime configuration (never exposed to client) ── */
 
 export function getLiteLLMBaseUrl(): string {
+  // Legacy env key used for Gemini text/image routing.
   return requireEnv("LITELLM_BASE_URL");
 }
 
 export function getLiteLLMApiKey(): string {
+  // Legacy env key used for Gemini text/image routing.
   return requireEnv("LITELLM_API_KEY");
 }
 
@@ -30,15 +32,25 @@ export function getModelName(): string {
 }
 
 export function getDashScopeApiKey(): string {
+  // Legacy env key used for Gemini voice routing.
   return requireEnv("DASHSCOPE_API_KEY");
 }
 
 export function getDashScopeCompatApiUrl(): string {
+  // Legacy env key used for Gemini voice routing.
   return requireEnv("DASHSCOPE_COMPAT_API_URL");
 }
 
 export function getDashScopeVoiceModel(): string {
   return optionalEnv("DASHSCOPE_VOICE_MODEL", "qwen3-omni-flash");
+}
+
+export function getGeminiApiKey(): string | null {
+  return process.env.GEMINI_API_KEY ?? null;
+}
+
+export function getGeminiFallbackModel(): string {
+  return optionalEnv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash");
 }
 
 export function getFirebaseProjectId(): string {
@@ -48,7 +60,7 @@ export function getFirebaseProjectId(): string {
   );
 }
 
-/* ── Public (safe to read anywhere) ── */
+/* ── Public app configuration (safe to read anywhere) ── */
 
 export function getAppName(): string {
   return optionalEnv("APP_NAME", "rakshak ai");

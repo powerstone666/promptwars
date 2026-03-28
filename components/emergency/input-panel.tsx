@@ -227,7 +227,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
   return (
     <div className="space-y-4">
       <div
-        className={`relative ${isDragging ? "ring-2 ring-[var(--mr-gold)] ring-offset-2 ring-offset-[var(--mr-base)]" : ""}`}
+        className={`relative ${isDragging ? "ring-2 ring-(--mr-gold) ring-offset-2 ring-offset-(--mr-base)" : ""}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -241,9 +241,9 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
           rows={4}
           maxLength={MAX_INPUT_CHARS + 100}
           disabled={isLoading}
-          className={`w-full px-5 py-4 bg-[var(--mr-surface)] border
-                     text-[var(--mr-text)] placeholder:text-[var(--mr-text-dim)]
-                     focus:outline-none focus:border-[var(--mr-gold)] focus:shadow-[0_0_20px_rgba(255,215,0,0.1)]
+          className={`w-full px-5 py-4 bg-(--mr-surface) border
+                     text-(--mr-text) placeholder:text-(--mr-text-dim)
+                     focus:outline-none focus:border-(--mr-gold) focus:shadow-[0_0_20px_rgba(255,215,0,0.1)]
                      resize-none transition-all
                      disabled:opacity-50 disabled:cursor-not-allowed
                      ${isOverLimit ? "border-red-500" : "border-white/10"}`}
@@ -255,7 +255,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
         <div
           id="char-count"
           className={`absolute bottom-3 right-3 text-xs
-                     ${isOverLimit ? "text-red-400" : charCount > MAX_INPUT_CHARS * 0.9 ? "text-yellow-400" : "text-[var(--mr-text-dim)]"}`}
+                     ${isOverLimit ? "text-red-400" : charCount > MAX_INPUT_CHARS * 0.9 ? "text-yellow-400" : "text-(--mr-text-dim)"}`}
           aria-live="polite"
         >
           {charCount.toLocaleString()} / {MAX_INPUT_CHARS.toLocaleString()}
@@ -269,7 +269,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
           <img
             src={imageBase64}
             alt="Uploaded emergency image"
-            className="max-h-[150px] w-auto object-cover border border-white/10"
+            className="max-h-37.5 w-auto object-cover border border-white/10"
           />
           <button
             onClick={removeImage}
@@ -295,7 +295,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
         <div className="space-y-2">
           <audio controls src={audioUrl} className="w-full" />
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[var(--mr-text-muted)]">Voice note attached</span>
+            <span className="text-xs text-(--mr-text-muted)">Voice note attached</span>
             <button
               onClick={deleteRecording}
               disabled={isLoading || isRecording}
@@ -330,11 +330,11 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)]
-                       border border-white/10 hover:border-[var(--mr-gold)]/30
-                       text-xs font-bold text-[var(--mr-text-muted)] hover:text-white transition-all
+            className="flex items-center gap-2 px-4 py-2 bg-(--mr-surface) hover:bg-(--mr-surface-high)
+                       border border-white/10 hover:border-(--mr-gold)/30
+                       text-xs font-bold text-(--mr-text-muted) hover:text-white transition-all
                        disabled:opacity-40 disabled:cursor-not-allowed
-                       focus:outline-none focus:border-[var(--mr-gold)]"
+                       focus:outline-none focus:border-(--mr-gold)"
             aria-label="Upload an image of the emergency"
           >
             <ImagePlus className="size-4" />
@@ -346,11 +346,11 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
             disabled={isLoading}
             className={`flex items-center gap-2 px-4 py-2 border text-xs font-bold transition-all
                        disabled:opacity-40 disabled:cursor-not-allowed
-                       focus:outline-none focus:border-[var(--mr-gold)]
+                       focus:outline-none focus:border-(--mr-gold)
                        ${
                          isRecording
                            ? "bg-red-500/10 border-red-500/40 text-red-300 hover:bg-red-500/15"
-                           : "bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)] border-white/10 hover:border-[var(--mr-gold)]/30 text-[var(--mr-text-muted)] hover:text-white"
+                           : "bg-(--mr-surface) hover:bg-(--mr-surface-high) border-white/10 hover:border-(--mr-gold)/30 text-(--mr-text-muted) hover:text-white"
                        }`}
             aria-label={isRecording ? "Stop voice recording" : "Record voice input"}
           >
@@ -363,11 +363,11 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
             <button
               onClick={() => setLangOpen((prev) => !prev)}
               disabled={isLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)]
-                         border border-white/10 hover:border-[var(--mr-gold)]/30
-                         text-xs font-bold text-[var(--mr-text-muted)] hover:text-white transition-all
+              className="flex items-center gap-2 px-4 py-2 bg-(--mr-surface) hover:bg-(--mr-surface-high)
+                         border border-white/10 hover:border-(--mr-gold)/30
+                         text-xs font-bold text-(--mr-text-muted) hover:text-white transition-all
                          disabled:opacity-40 disabled:cursor-not-allowed
-                         focus:outline-none focus:border-[var(--mr-gold)]"
+                         focus:outline-none focus:border-(--mr-gold)"
               aria-label="Select output language"
               aria-expanded={langOpen}
               aria-haspopup="listbox"
@@ -388,7 +388,7 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
             {langOpen && (
               <div
                 className="absolute bottom-full left-0 mb-2 w-56 max-h-60 overflow-y-auto
-                           bg-[var(--mr-surface)] border border-white/10 shadow-xl z-50"
+                           bg-(--mr-surface) border border-white/10 shadow-xl z-50"
                 role="listbox"
                 aria-label="Output language options"
               >
@@ -400,24 +400,24 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
                       setLangOpen(false);
                     }}
                     className={`w-full flex items-center justify-between px-4 py-2.5 text-left text-xs transition-colors
-                               hover:bg-[var(--mr-surface-high)]
+                               hover:bg-(--mr-surface-high)
                                ${lang.code === outputLanguage
-                                 ? "text-[var(--mr-gold)] bg-[var(--mr-gold)]/5"
-                                 : "text-[var(--mr-text-muted)]"}`}
+                                 ? "text-(--mr-gold) bg-(--mr-gold)/5"
+                                 : "text-(--mr-text-muted)"}`}
                     role="option"
                     aria-selected={lang.code === outputLanguage}
                   >
                     <span className="font-bold">{lang.native}</span>
-                    <span className="text-[var(--mr-text-dim)]">{lang.label}</span>
+                    <span className="text-(--mr-text-dim)">{lang.label}</span>
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          <p id="input-help" className="text-xs text-[var(--mr-text-dim)] hidden sm:block">
+          <p id="input-help" className="text-xs text-(--mr-text-dim) hidden sm:block">
             Drag & drop images • record voice •{" "}
-            <kbd className="px-1.5 py-0.5 bg-[var(--mr-surface-high)] text-[var(--mr-text-muted)] text-[10px]">
+            <kbd className="px-1.5 py-0.5 bg-(--mr-surface-high) text-(--mr-text-muted) text-[10px]">
               ⌘ Enter
             </kbd>
           </p>
@@ -426,12 +426,12 @@ export function InputPanel({ onSubmit, isLoading, initialText = "" }: InputPanel
         <button
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className="flex items-center gap-3 bg-[var(--mr-gold)] text-[var(--mr-on-gold)]
+          className="flex items-center gap-3 bg-(--mr-gold) text-(--mr-on-gold)
                      px-8 py-3 font-black italic text-base tracking-widest
                      active:scale-95 transition-all
                      disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
                      hover:shadow-[0_0_30px_rgba(255,215,0,0.25)]
-                     focus:outline-none focus:ring-2 focus:ring-[var(--mr-gold)] focus:ring-offset-2 focus:ring-offset-[var(--mr-base)]"
+                     focus:outline-none focus:ring-2 focus:ring-(--mr-gold) focus:ring-offset-2 focus:ring-offset-(--mr-base)"
           style={{ fontFamily: "var(--font-headline)" }}
           aria-label={isLoading ? "Analyzing emergency..." : "Analyze emergency situation"}
         >

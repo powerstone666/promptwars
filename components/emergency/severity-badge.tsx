@@ -38,7 +38,7 @@ export function SeverityBadge({ severity, confidence, className = "" }: Severity
       >
         {config.label}
       </span>
-      <span className="text-xs text-[var(--mr-text-dim)] border-l border-white/10 pl-3">
+      <span className="text-xs text-(--mr-text-dim) border-l border-white/10 pl-3">
         {confidencePercent}% confidence
       </span>
     </div>

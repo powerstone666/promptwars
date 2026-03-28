@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unused-vars */
 const crypto = require('crypto');
 const http = require('http');
 const fs = require('fs');

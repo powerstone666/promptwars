@@ -71,7 +71,7 @@ export function NearbyHospitalsPanel({
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-[var(--mr-text-dim)] text-sm py-4">
+      <div className="flex items-center gap-2 text-(--mr-text-dim) text-sm py-4">
         <Loader2 className="size-4 animate-spin" />
         Finding nearby hospitals...
       </div>
@@ -80,7 +80,7 @@ export function NearbyHospitalsPanel({
 
   if (error) {
     return (
-      <p className="text-xs text-[var(--mr-text-dim)] py-2">
+      <p className="text-xs text-(--mr-text-dim) py-2">
         Could not load nearby hospitals: {error}
       </p>
     );
@@ -88,7 +88,7 @@ export function NearbyHospitalsPanel({
 
   if (hospitals.length === 0) {
     return (
-      <p className="text-xs text-[var(--mr-text-dim)] py-2">
+      <p className="text-xs text-(--mr-text-dim) py-2">
         No hospitals found nearby.
       </p>
     );
@@ -97,7 +97,7 @@ export function NearbyHospitalsPanel({
   return (
     <div className="space-y-3">
       <h4
-        className="flex items-center gap-2 text-[var(--mr-cyan)] font-bold italic text-sm uppercase tracking-wider"
+        className="flex items-center gap-2 text-(--mr-cyan) font-bold italic text-sm uppercase tracking-wider"
         style={{ fontFamily: "var(--font-headline)" }}
       >
         <MapPin className="size-4" aria-hidden="true" />
@@ -108,7 +108,7 @@ export function NearbyHospitalsPanel({
         {hospitals.slice(0, 6).map((h) => (
           <div
             key={h.placeId}
-            className="p-4 bg-[var(--mr-surface)] border border-white/5 space-y-2"
+            className="p-4 bg-(--mr-surface) border border-white/5 space-y-2"
           >
             <div className="flex items-start justify-between gap-2">
               <h5 className="text-sm font-bold text-white leading-tight">{h.name}</h5>
@@ -125,16 +125,16 @@ export function NearbyHospitalsPanel({
               )}
             </div>
 
-            <p className="text-xs text-[var(--mr-text-muted)] leading-relaxed">{h.address}</p>
+            <p className="text-xs text-(--mr-text-muted) leading-relaxed">{h.address}</p>
 
             <div className="flex items-center gap-4 flex-wrap">
               {h.distance && (
-                <span className="text-xs text-[var(--mr-text-dim)]">
+                <span className="text-xs text-(--mr-text-dim)">
                   📍 {h.distance}
                 </span>
               )}
               {h.rating && (
-                <span className="flex items-center gap-1 text-xs text-[var(--mr-gold)]">
+                <span className="flex items-center gap-1 text-xs text-(--mr-gold)">
                   <Star className="size-3 fill-current" /> {h.rating}
                 </span>
               )}
@@ -155,7 +155,7 @@ export function NearbyHospitalsPanel({
                 href={h.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-[var(--mr-cyan)] hover:text-white transition-colors"
+                className="flex items-center gap-1 text-xs text-(--mr-cyan) hover:text-white transition-colors"
                 aria-label={`Open ${h.name} in Google Maps`}
               >
                 <ExternalLink className="size-3" />

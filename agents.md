@@ -145,6 +145,7 @@ These plugins are available in the local Codex plugin environment and should be 
 - **motion** - Animation library
 - **axios** - HTTP client
 - **firebase** - Firebase Web SDK
+- **Google Services** - Google Maps nearby search, Firebase persistence, and optional Gemini fallback integration
 - **react-hook-form** - Form management
 - **zod** - Schema validation
 - **sonner** - Toast notifications
@@ -159,6 +160,40 @@ These plugins are available in the local Codex plugin environment and should be 
 
 Antigravity Gemini Codex Chatgpt GitHub Copilot Claude Opus 4.6 and Cline
 
+## Google Services Used
+
+This project currently integrates the following Google ecosystem services:
+
+1. **Gemini API**
+- Used as an optional fallback generation path when `GEMINI_API_KEY` is configured and a primary provider fails
+
+2. **Firebase**
+- Provides project configuration bootstrap for the web app
+
+3. **Firestore**
+- Stores triage history records from the analyze route when Firebase is configured and available
+
+4. **Firebase Analytics**
+- A browser-only helper exists for initializing Analytics when the runtime supports it
+
+5. **Google Maps Places API**
+- Powers nearby hospital and emergency-capable facility lookup
+
+6. **Google Maps Platform**
+- Uses `GOOGLE_MAPS_API_KEY` for Places-based geospatial lookups
+
+The following Google services are not currently implemented:
+
+- **Google People API**
+- **Google Weather API**
+- **Google Cloud Vision API**
+- **Firebase A/B Testing / Remote Config**
+- **Firebase Cloud Messaging**
+- **Firebase Storage**
+- **Firebase Auth**
+- **Firebase App Check**
+- **Firebase Performance Monitoring**
+
 ## Available Scripts
 
 ```bash
@@ -166,7 +201,47 @@ npm run dev     # Start development server (uses Webpack)
 npm run build   # Build for production (uses Webpack)
 npm start       # Start production server
 npm run lint    # Run ESLint
+npm test        # Run Jest unit and service tests
+npm run test:e2e # Run Playwright UI and end-to-end tests
 ```
+
+## Test Categories
+
+This repository now reflects multiple testing layers:
+
+1. **Unit and service tests**
+- Jest covers provider routing, Firebase config helpers, verification logic, action composition, logging, facility routing, nearby-hospital ranking, and analyzer fallback behavior
+- Separate Google-service tests cover Gemini fallback, Firebase analytics/config, Google Maps Places request shaping, and Google-service env helpers
+
+2. **UI and end-to-end tests**
+- Playwright specs in `tests/e2e/home.spec.ts` and `tests/e2e/emergency.spec.ts` cover the landing page, root app shell, demo-flow analysis, error states, and image/voice input affordances
+
+3. **Manual smoke testing**
+- Manual checks remain important for browser permission flows such as microphone recording, geolocation prompts, image upload, and safe fallback behavior under provider failure
+
+## Accessibility Notes
+
+Accessibility improvements are present in the main emergency UI:
+
+- Input and action controls expose accessible labels
+- Loading and analysis states expose status semantics
+- Language selection uses `listbox` and `option` roles with selected-state metadata
+- Multilingual output support improves usability and accessibility for users who need emergency guidance in their preferred language
+- Result details and verification toggles use clearer expanded/collapsed state handling
+- Keyboard submission is supported with `Ctrl/Cmd + Enter`
+
+Agents should preserve these affordances when editing `components/emergency/*` or `app/page.tsx`.
+
+## Efficiency Notes
+
+The app includes several practical efficiency improvements:
+
+- Provider routing is split by modality to avoid invalid text/image/audio combinations
+- Primary provider failures can fall back to Gemini when configured
+- Firestore persistence is optional and does not block response generation
+- Nearby-hospital ranking prefers emergency-capable facilities before distance-only ordering
+- Weather and nearby-hospital panels are supplemental and fail-soft
+- Input validation rejects oversized or malformed payloads early
 
 ## Hackathon Readiness Guide
 
@@ -203,7 +278,7 @@ Use these as starting points:
 
 **AI Chat Application:**
 
-- Uses `litellm` for LLM API unification
+- Uses Gemini-oriented text/image routing with optional Gemini fallback support
 - Pre-configured with `axios` for API calls
 - `react-hook-form` + `zod` for form validation
 - `sonner` for toast notifications

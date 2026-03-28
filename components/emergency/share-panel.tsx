@@ -68,10 +68,10 @@ export function SharePanel({ data }: SharePanelProps) {
     <div className="flex flex-wrap gap-3">
       <button
         onClick={handleCopy}
-        className="flex items-center gap-2 px-5 py-2.5 bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)]
-                   border border-white/10 hover:border-[var(--mr-gold)]/30
+        className="flex items-center gap-2 px-5 py-2.5 bg-(--mr-surface) hover:bg-(--mr-surface-high)
+                   border border-white/10 hover:border-(--mr-gold)/30
                    text-sm font-bold text-white transition-all
-                   focus:outline-none focus:border-[var(--mr-gold)]"
+                   focus:outline-none focus:border-(--mr-gold)"
         aria-label="Copy emergency report to clipboard"
       >
         {copied ? (
@@ -89,10 +89,10 @@ export function SharePanel({ data }: SharePanelProps) {
 
       <button
         onClick={handleDownloadJSON}
-        className="flex items-center gap-2 px-5 py-2.5 bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)]
-                   border border-white/10 hover:border-[var(--mr-gold)]/30
+        className="flex items-center gap-2 px-5 py-2.5 bg-(--mr-surface) hover:bg-(--mr-surface-high)
+                   border border-white/10 hover:border-(--mr-gold)/30
                    text-sm font-bold text-white transition-all
-                   focus:outline-none focus:border-[var(--mr-gold)]"
+                   focus:outline-none focus:border-(--mr-gold)"
         aria-label="Download emergency report as JSON"
       >
         <Download className="size-4" />

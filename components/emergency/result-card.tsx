@@ -23,7 +23,7 @@ export function ResultCard({ data }: ResultCardProps) {
 
   return (
     <div
-      className="w-full bg-[var(--mr-surface-low)] border border-white/5 animate-float-in"
+      className="w-full bg-(--mr-surface-low) border border-white/5 animate-float-in"
       role="article"
       aria-label="Emergency triage result"
     >
@@ -31,7 +31,7 @@ export function ResultCard({ data }: ResultCardProps) {
       <div className="px-6 py-5 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p
-            className="text-xs text-[var(--mr-gold)] uppercase tracking-[0.3em] font-bold mb-1"
+            className="text-xs text-(--mr-gold) uppercase tracking-[0.3em] font-bold mb-1"
             style={{ fontFamily: "var(--font-label)" }}
           >
             Incident Assessment
@@ -65,11 +65,11 @@ export function ResultCard({ data }: ResultCardProps) {
 
       {/* ── Summary ── */}
       <div className="px-6 py-5 border-b border-white/5">
-        <p className="text-[var(--mr-text)] leading-relaxed">{data.summary}</p>
+        <p className="text-(--mr-text) leading-relaxed">{data.summary}</p>
 
         {/* Language detected */}
-        <p className="text-xs text-[var(--mr-text-dim)] mt-3">
-          Language detected: <span className="text-[var(--mr-text-muted)]">{data.language}</span>
+        <p className="text-xs text-(--mr-text-dim) mt-3">
+          Language detected: <span className="text-(--mr-text-muted)">{data.language}</span>
         </p>
       </div>
 
@@ -84,13 +84,13 @@ export function ResultCard({ data }: ResultCardProps) {
       {/* ── Routing suggestion ── */}
       {data.routing.facilityType && (
         <div className="px-6 py-4 border-b border-white/5">
-          <div className="flex items-start gap-3 p-4 bg-[var(--mr-cyan)]/5 border border-[var(--mr-cyan)]/20">
-            <MapPin className="size-5 text-[var(--mr-cyan)] shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="flex items-start gap-3 p-4 bg-(--mr-cyan)/5 border border-(--mr-cyan)/20">
+            <MapPin className="size-5 text-(--mr-cyan) shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="text-[var(--mr-cyan)] font-bold text-sm">
+              <p className="text-(--mr-cyan) font-bold text-sm">
                 Suggested Facility: {data.routing.facilityType}
               </p>
-              <p className="text-xs text-[var(--mr-text-muted)] mt-1">
+              <p className="text-xs text-(--mr-text-muted) mt-1">
                 {data.routing.rationale}
               </p>
             </div>
@@ -102,7 +102,7 @@ export function ResultCard({ data }: ResultCardProps) {
       <div className="px-6 py-4 border-b border-white/5">
         <button
           onClick={() => setShowVerification(!showVerification)}
-          className="flex items-center gap-2 text-sm text-[var(--mr-text-muted)] hover:text-white transition-colors
+          className="flex items-center gap-2 text-sm text-(--mr-text-muted) hover:text-white transition-colors
                      focus:outline-none focus:text-white w-full"
           aria-expanded={showVerification}
           aria-controls="verification-details"
@@ -130,7 +130,7 @@ export function ResultCard({ data }: ResultCardProps) {
 
       {/* ── Disclaimer ── */}
       <div className="px-6 py-4 border-b border-white/5">
-        <div className="flex items-start gap-2 text-xs text-[var(--mr-text-dim)]">
+        <div className="flex items-start gap-2 text-xs text-(--mr-text-dim)">
           <AlertTriangle className="size-3.5 shrink-0 mt-0.5" aria-hidden="true" />
           <p>{data.disclaimer}</p>
         </div>

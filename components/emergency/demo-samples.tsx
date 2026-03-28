@@ -11,7 +11,7 @@ export function DemoSamples({ onSelect, disabled = false }: DemoSamplesProps) {
   return (
     <div className="space-y-3">
       <p
-        className="text-xs text-[var(--mr-gold)] uppercase tracking-[0.3em] font-bold"
+        className="text-xs text-(--mr-gold) uppercase tracking-[0.3em] font-bold"
         style={{ fontFamily: "var(--font-label)" }}
       >
         Try a demo scenario
@@ -22,22 +22,22 @@ export function DemoSamples({ onSelect, disabled = false }: DemoSamplesProps) {
             key={sample.label}
             onClick={() => onSelect(sample.text)}
             disabled={disabled}
-            className="group text-left p-4 bg-[var(--mr-surface)] hover:bg-[var(--mr-surface-high)]
-                       border border-transparent hover:border-[var(--mr-gold)]/30
+            className="group text-left p-4 bg-(--mr-surface) hover:bg-(--mr-surface-high)
+                       border border-transparent hover:border-(--mr-gold)/30
                        transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed
-                       glow-border-hover focus:outline-none focus:border-[var(--mr-gold)]"
+                       glow-border-hover focus:outline-none focus:border-(--mr-gold)"
             aria-label={`Demo: ${sample.label} — ${sample.text}`}
           >
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg" aria-hidden="true">{sample.icon}</span>
               <span
-                className="text-sm font-bold italic text-white group-hover:text-[var(--mr-gold)] transition-colors"
+                className="text-sm font-bold italic text-white group-hover:text-(--mr-gold) transition-colors"
                 style={{ fontFamily: "var(--font-headline)" }}
               >
                 {sample.label}
               </span>
             </div>
-            <p className="text-xs text-[var(--mr-text-muted)] line-clamp-2 leading-relaxed">
+            <p className="text-xs text-(--mr-text-muted) line-clamp-2 leading-relaxed">
               &quot;{sample.text}&quot;
             </p>
           </button>

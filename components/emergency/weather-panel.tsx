@@ -33,7 +33,7 @@ export function WeatherPanel({ lat, lng }: WeatherPanelProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-[var(--mr-text-dim)] text-sm">
+      <div className="flex items-center gap-2 text-(--mr-text-dim) text-sm">
         <Loader2 className="size-3 animate-spin" />
         Loading weather...
       </div>
@@ -45,19 +45,19 @@ export function WeatherPanel({ lat, lng }: WeatherPanelProps) {
   return (
     <div className="space-y-3">
       <h4
-        className="flex items-center gap-2 text-[var(--mr-gold)] font-bold italic text-sm uppercase tracking-wider"
+        className="flex items-center gap-2 text-(--mr-gold) font-bold italic text-sm uppercase tracking-wider"
         style={{ fontFamily: "var(--font-headline)" }}
       >
         <Cloud className="size-4" aria-hidden="true" />
         Current Conditions
       </h4>
 
-      <div className="flex flex-wrap gap-4 p-4 bg-[var(--mr-surface)] border border-white/5">
+      <div className="flex flex-wrap gap-4 p-4 bg-(--mr-surface) border border-white/5">
         <div className="flex items-center gap-2">
           <Thermometer className="size-4 text-red-400" aria-hidden="true" />
           <div>
             <p className="text-sm font-bold text-white">{weather.temperature}°C</p>
-            <p className="text-[10px] text-[var(--mr-text-dim)]">
+            <p className="text-[10px] text-(--mr-text-dim)">
               Feels like {weather.feelsLike}°C
             </p>
           </div>
@@ -67,7 +67,7 @@ export function WeatherPanel({ lat, lng }: WeatherPanelProps) {
           <Cloud className="size-4 text-blue-400" aria-hidden="true" />
           <div>
             <p className="text-sm font-bold text-white">{weather.weatherDescription}</p>
-            <p className="text-[10px] text-[var(--mr-text-dim)]">
+            <p className="text-[10px] text-(--mr-text-dim)">
               {weather.isDay ? "Daytime" : "Nighttime"}
             </p>
           </div>
@@ -77,7 +77,7 @@ export function WeatherPanel({ lat, lng }: WeatherPanelProps) {
           <Droplets className="size-4 text-cyan-400" aria-hidden="true" />
           <div>
             <p className="text-sm font-bold text-white">{weather.humidity}%</p>
-            <p className="text-[10px] text-[var(--mr-text-dim)]">Humidity</p>
+            <p className="text-[10px] text-(--mr-text-dim)">Humidity</p>
           </div>
         </div>
 
@@ -85,7 +85,7 @@ export function WeatherPanel({ lat, lng }: WeatherPanelProps) {
           <Wind className="size-4 text-slate-400" aria-hidden="true" />
           <div>
             <p className="text-sm font-bold text-white">{weather.windSpeed} km/h</p>
-            <p className="text-[10px] text-[var(--mr-text-dim)]">Wind</p>
+            <p className="text-[10px] text-(--mr-text-dim)">Wind</p>
           </div>
         </div>
       </div>

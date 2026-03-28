@@ -1,15 +1,17 @@
 /**
- * AI Provider routing.
+ * Gemini provider routing.
  *
  * All model communication is isolated here.
- * LiteLLM is used only for text-only and text+image analysis.
- * DashScope is used only for requests that include recorded audio.
+ * Legacy `LITELLM_*` env keys power the Gemini text/image path.
+ * Legacy `DASHSCOPE_*` env keys power the Gemini voice path.
  */
 
 import {
   getDashScopeApiKey,
   getDashScopeCompatApiUrl,
   getDashScopeVoiceModel,
+  getGeminiApiKey,
+  getGeminiFallbackModel,
   getLiteLLMBaseUrl,
   getLiteLLMApiKey,
   getModelName,
@@ -70,8 +72,18 @@ interface DashScopeChatCompletionResponse {
   };
 }
 
+interface GeminiGenerateContentResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{
+        text?: string;
+      }>;
+    };
+  }>;
+}
+
 /**
- * Build the LiteLLM user message content.
+ * Build the Gemini text/image user message content.
  * This path is intentionally limited to text-only and text+image requests.
  */
 function buildUserContent(
@@ -118,6 +130,21 @@ export function parseAudioDataUrl(audioBase64: string): { data: string; format: 
   return { data: base64Data, format };
 }
 
+function parseDataUrl(
+  value: string,
+): { mimeType: string; data: string } | null {
+  const match = value.trim().match(/^data:([^;,]+)(?:;[^,]*)?;base64,(.+)$/);
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    mimeType: match[1],
+    data: match[2].replace(/\s+/g, ""),
+  };
+}
+
 function normalizeDashScopeAudioInput(audioInput: string): { data: string; format: string } {
   const trimmed = audioInput.trim();
   const dataUrlMatch = trimmed.match(/^data:audio\/([a-zA-Z0-9.+-]+)(?:;[^,]*)?;base64,(.+)$/);
@@ -155,6 +182,101 @@ function extractTextContent(content: string | Array<{ type?: string; text?: stri
   }
 
   return null;
+}
+
+function extractGeminiText(response: GeminiGenerateContentResponse): string | null {
+  const parts = response.candidates?.[0]?.content?.parts ?? [];
+  const text = parts
+    .map((part) => part.text ?? "")
+    .join("\n")
+    .trim();
+
+  return text || null;
+}
+
+async function callGeminiFallback(
+  systemPrompt: string,
+  userPrompt: string,
+  requestId: string,
+  imageBase64?: string,
+  audioBase64?: string,
+): Promise<string> {
+  const apiKey = getGeminiApiKey();
+
+  if (!apiKey) {
+    throw new Error("Gemini fallback is not configured");
+  }
+
+  const model = getGeminiFallbackModel();
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const parts: Array<Record<string, unknown>> = [{ text: userPrompt }];
+
+  if (imageBase64) {
+    const image = parseDataUrl(imageBase64);
+    if (image) {
+      parts.push({
+        inline_data: {
+          mime_type: image.mimeType,
+          data: image.data,
+        },
+      });
+    }
+  }
+
+  if (audioBase64) {
+    const normalizedAudio = normalizeDashScopeAudioInput(audioBase64);
+    const audio = parseDataUrl(normalizedAudio.data);
+    if (audio) {
+      parts.push({
+        inline_data: {
+          mime_type: audio.mimeType,
+          data: audio.data,
+        },
+      });
+    }
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
+    },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: systemPrompt }],
+      },
+      contents: [
+        {
+          role: "user",
+          parts,
+        },
+      ],
+      generationConfig: {
+        responseMimeType: "application/json",
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => "unknown");
+    logger.error(`[${requestId}] Gemini fallback API error`, {
+      provider: "gemini-fallback",
+      status: response.status,
+      model,
+      body: errorBody.slice(0, 500),
+    });
+    throw new Error(`Gemini fallback returned ${response.status}: ${errorBody.slice(0, 200)}`);
+  }
+
+  const data = (await response.json()) as GeminiGenerateContentResponse;
+  const content = extractGeminiText(data);
+
+  if (!content) {
+    throw new Error("Gemini fallback returned empty content");
+  }
+
+  return content;
 }
 
 async function callDashScopeWithAudio(
@@ -221,9 +343,9 @@ async function callDashScopeWithAudio(
 }
 
 /**
- * Route analysis to the correct provider.
- * LiteLLM handles text-only and text+image.
- * DashScope handles any request that includes audio.
+ * Route analysis to the correct Gemini capability path.
+ * Legacy `LITELLM_*` settings handle text-only and text+image.
+ * Legacy `DASHSCOPE_*` settings handle any request that includes audio.
  */
 export async function callLLM(
   systemPrompt: string,
@@ -232,8 +354,19 @@ export async function callLLM(
   imageBase64?: string,
   audioBase64?: string,
 ): Promise<string> {
+  // Audio requests bypass the Gemini text/image path entirely.
   if (audioBase64) {
-    return callDashScopeWithAudio(systemPrompt, userPrompt, requestId, audioBase64);
+    try {
+      return await callDashScopeWithAudio(systemPrompt, userPrompt, requestId, audioBase64);
+    } catch (primaryError) {
+      logger.warn(`[${requestId}] Primary voice provider failed, trying Gemini fallback`, {
+        provider: "dashscope",
+        fallback: "gemini",
+        error:
+          primaryError instanceof Error ? primaryError.message : String(primaryError),
+      });
+      return callGeminiFallback(systemPrompt, userPrompt, requestId, imageBase64, audioBase64);
+    }
   }
 
   const baseUrl = getLiteLLMBaseUrl();
@@ -297,9 +430,22 @@ export async function callLLM(
         model,
         multimodal: isMultimodal,
       });
-      throw new Error(`LLM call timed out after ${AI_TIMEOUT_MS}ms`);
+      logger.warn(`[${requestId}] Primary text/image provider timed out, trying Gemini fallback`, {
+        provider: "litellm",
+        fallback: "gemini",
+        model,
+        multimodal: isMultimodal,
+      });
+      return callGeminiFallback(systemPrompt, userPrompt, requestId, imageBase64);
     }
-    throw err;
+    logger.warn(`[${requestId}] Primary text/image provider failed, trying Gemini fallback`, {
+      provider: "litellm",
+      fallback: "gemini",
+      model,
+      multimodal: isMultimodal,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return callGeminiFallback(systemPrompt, userPrompt, requestId, imageBase64);
   } finally {
     clearTimeout(timeout);
   }

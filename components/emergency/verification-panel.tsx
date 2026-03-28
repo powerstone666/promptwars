@@ -44,7 +44,7 @@ export function VerificationPanel({
   return (
     <div className="space-y-4">
       <h4
-        className="flex items-center gap-2 text-[var(--mr-cyan)] font-bold italic text-sm uppercase tracking-wider"
+        className="flex items-center gap-2 text-(--mr-cyan) font-bold italic text-sm uppercase tracking-wider"
         style={{ fontFamily: "var(--font-headline)" }}
       >
         <Eye className="size-4" aria-hidden="true" />
@@ -61,14 +61,14 @@ export function VerificationPanel({
 
       {/* Extracted signals */}
       <div>
-        <p className="text-xs text-[var(--mr-text-dim)] uppercase tracking-wider mb-2">
+        <p className="text-xs text-(--mr-text-dim) uppercase tracking-wider mb-2">
           Extracted Signals
         </p>
         <div className="flex flex-wrap gap-2">
           {extractedSignals.map((signal, i) => (
             <span
               key={i}
-              className="text-xs px-3 py-1.5 bg-[var(--mr-surface-high)] text-[var(--mr-text)] border border-white/5"
+              className="text-xs px-3 py-1.5 bg-(--mr-surface-high) text-(--mr-text) border border-white/5"
             >
               {signal}
             </span>
@@ -78,12 +78,12 @@ export function VerificationPanel({
 
       {/* Confidence bar */}
       <div>
-        <p className="text-xs text-[var(--mr-text-dim)] uppercase tracking-wider mb-2">
+        <p className="text-xs text-(--mr-text-dim) uppercase tracking-wider mb-2">
           AI Confidence
         </p>
-        <div className="w-full h-2 bg-[var(--mr-surface-high)] overflow-hidden">
+        <div className="w-full h-2 bg-(--mr-surface-high) overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[var(--mr-cyan)] to-[var(--mr-gold)] transition-all duration-700"
+            className="h-full bg-linear-to-r from-(--mr-cyan) to-(--mr-gold) transition-all duration-700"
             style={{ width: `${Math.round(confidence * 100)}%` }}
             role="progressbar"
             aria-valuenow={Math.round(confidence * 100)}
@@ -92,7 +92,7 @@ export function VerificationPanel({
             aria-label={`AI confidence: ${Math.round(confidence * 100)}%`}
           />
         </div>
-        <p className="text-xs text-[var(--mr-text-dim)] mt-1">
+        <p className="text-xs text-(--mr-text-dim) mt-1">
           {Math.round(confidence * 100)}% — {confidence >= 0.7 ? "High confidence" : confidence >= 0.4 ? "Moderate confidence" : "Low confidence — seek professional confirmation"}
         </p>
       </div>
@@ -100,16 +100,16 @@ export function VerificationPanel({
       {/* Verification notes */}
       {verification.notes.length > 0 && (
         <div>
-          <p className="text-xs text-[var(--mr-text-dim)] uppercase tracking-wider mb-2">
+          <p className="text-xs text-(--mr-text-dim) uppercase tracking-wider mb-2">
             Assessment Notes
           </p>
           <ul className="space-y-1.5">
             {verification.notes.map((note, i) => (
               <li
                 key={i}
-                className="text-xs text-[var(--mr-text-muted)] flex items-start gap-2"
+                className="text-xs text-(--mr-text-muted) flex items-start gap-2"
               >
-                <span className="text-[var(--mr-text-dim)] mt-0.5">•</span>
+                <span className="text-(--mr-text-dim) mt-0.5">•</span>
                 <span>{note}</span>
               </li>
             ))}

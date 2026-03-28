@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
     const final = composeActions(verified);
 
     // ── 4. Save to Firebase Database ──
-    if (isFirebaseWebConfigured()) {
+    if (isFirebaseWebConfigured() && db) {
       try {
         await addDoc(collection(db, "triage_history"), {
           requestId,
@@ -144,6 +144,8 @@ export async function POST(request: NextRequest) {
           error: dbError instanceof Error ? dbError.message : "Unknown DB error",
         });
       }
+    } else if (!db) {
+      logger.warn(`[${requestId}] Firestore unavailable, skipping persistence`);
     }
 
     const elapsed = Date.now() - startTime;

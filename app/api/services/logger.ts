@@ -39,7 +39,7 @@ export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
-  data?: any;
+  data?: unknown;
   caller?: string;
 }
 
@@ -95,7 +95,7 @@ export class Logger {
    * @param message The message to log
    * @param data Optional additional data
    */
-  debug(message: string, data?: any): void {
+  debug(message: string, data?: unknown): void {
     this.log(LogLevel.DEBUG, message, data);
   }
 
@@ -104,7 +104,7 @@ export class Logger {
    * @param message The message to log
    * @param data Optional additional data
    */
-  info(message: string, data?: any): void {
+  info(message: string, data?: unknown): void {
     this.log(LogLevel.INFO, message, data);
   }
 
@@ -113,7 +113,7 @@ export class Logger {
    * @param message The message to log
    * @param data Optional additional data
    */
-  warn(message: string, data?: any): void {
+  warn(message: string, data?: unknown): void {
     this.log(LogLevel.WARN, message, data);
   }
 
@@ -122,7 +122,7 @@ export class Logger {
    * @param message The message to log
    * @param data Optional additional data
    */
-  error(message: string, data?: any): void {
+  error(message: string, data?: unknown): void {
     this.log(LogLevel.ERROR, message, data);
   }
 
@@ -131,7 +131,7 @@ export class Logger {
    * @param message The message to log
    * @param data Optional additional data
    */
-  fatal(message: string, data?: any): void {
+  fatal(message: string, data?: unknown): void {
     this.log(LogLevel.FATAL, message, data);
   }
 
@@ -141,7 +141,7 @@ export class Logger {
    * @param message The message to log
    * @param data Optional additional data
    */
-  private log(level: LogLevel, message: string, data?: any): void {
+  private log(level: LogLevel, message: string, data?: unknown): void {
     // Skip if below minimum level
     if (level < this.minLevel) {
       return;
@@ -220,7 +220,7 @@ export class Logger {
    * @returns JSON string
    */
   private formatAsJson(entry: LogEntry): string {
-    const jsonEntry: any = {
+    const jsonEntry: Record<string, unknown> = {
       message: entry.message,
       level: LogLevel[entry.level]
     };

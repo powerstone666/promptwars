@@ -154,7 +154,8 @@ export function rankNearbyFacilities<T extends FacilityCandidate>(
   if (!requiresEmergencyHospitalRanking(context)) {
     return [...ranked]
       .sort((a, b) => b.score - a.score)
-      .map(({ score: _score, ...facility }) => facility as T);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ score: _, ...facility }) => facility as T);
   }
 
   const filtered = ranked.filter((facility) => facility.score > 0);
@@ -162,5 +163,6 @@ export function rankNearbyFacilities<T extends FacilityCandidate>(
 
   return [...source]
     .sort((a, b) => b.score - a.score)
-    .map(({ score: _score, ...facility }) => facility as T);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .map(({ score: _, ...facility }) => facility as T);
 }

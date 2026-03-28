@@ -105,13 +105,13 @@ export default function HomePage() {
   const isLoading = state === "analyzing";
 
   return (
-    <div className="min-h-screen bg-[var(--mr-base)]">
+    <div className="min-h-screen bg-(--mr-base)">
       {/* ── Sticky top bar ── */}
-      <nav className="sticky top-0 z-50 bg-[var(--mr-base)] border-b border-[var(--mr-gold)]/10 px-6 py-3">
+      <nav className="sticky top-0 z-50 bg-(--mr-base) border-b border-(--mr-gold)/10 px-6 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link
             href="/docs"
-            className="flex items-center gap-2 text-[var(--mr-text-muted)] hover:text-white transition-colors
+            className="flex items-center gap-2 text-(--mr-text-muted) hover:text-white transition-colors
                        focus:outline-none focus:text-white"
             aria-label="Documentation & landing page"
           >
@@ -143,7 +143,7 @@ export default function HomePage() {
               </span>
             )}
             {locationStatus === "requesting" && (
-              <span className="text-[10px] text-[var(--mr-text-dim)] animate-pulse">
+              <span className="text-[10px] text-(--mr-text-dim) animate-pulse">
                 📍 Locating...
               </span>
             )}
@@ -158,9 +158,9 @@ export default function HomePage() {
             className="text-3xl md:text-5xl font-black italic text-white hero-glow"
             style={{ fontFamily: "var(--font-headline)" }}
           >
-            DECODE THE <span className="text-[var(--mr-gold)]">CHAOS</span>
+            DECODE THE <span className="text-(--mr-gold)">CHAOS</span>
           </h1>
-          <p className="text-[var(--mr-text-muted)] max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+          <p className="text-(--mr-text-muted) max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
             Paste any messy, panicked, or multilingual emergency description — or upload a photo.
             Our AI triage system will extract the signals, assess severity, and give you clear, actionable
             next steps — <em>in seconds</em>.
@@ -183,8 +183,8 @@ export default function HomePage() {
         {isLoading && (
           <div className="flex flex-col items-center gap-4 py-12" role="status" aria-label="Analyzing">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-[var(--mr-surface-highest)] border-t-[var(--mr-gold)] rounded-full animate-spin" />
-              <ShieldAlert className="absolute inset-0 m-auto size-6 text-[var(--mr-gold)]" />
+              <div className="w-16 h-16 border-4 border-(--mr-surface-highest) border-t-(--mr-gold) rounded-full animate-spin" />
+              <ShieldAlert className="absolute inset-0 m-auto size-6 text-(--mr-gold)" />
             </div>
             <div className="text-center">
               <p
@@ -193,7 +193,7 @@ export default function HomePage() {
               >
                 ANALYZING SITUATION...
               </p>
-              <p className="text-[var(--mr-text-dim)] text-sm mt-1">
+              <p className="text-(--mr-text-dim) text-sm mt-1">
                 Extracting signals, assessing severity, composing actions
               </p>
             </div>
@@ -206,7 +206,7 @@ export default function HomePage() {
             <p className="text-red-400 font-bold">{error}</p>
             <button
               onClick={handleReset}
-              className="text-sm text-[var(--mr-text-muted)] hover:text-white underline transition-colors
+              className="text-sm text-(--mr-text-muted) hover:text-white underline transition-colors
                          focus:outline-none focus:text-white"
             >
               Try again
@@ -221,7 +221,7 @@ export default function HomePage() {
 
             {/* ── Location-based context ── */}
             {location && (
-              <div className="space-y-6 bg-[var(--mr-surface-low)] border border-white/5 p-6">
+              <div className="space-y-6 bg-(--mr-surface-low) border border-white/5 p-6">
                 <WeatherPanel lat={location.lat} lng={location.lng} />
                 <div className="border-t border-white/5 pt-6">
                   <NearbyHospitalsPanel
@@ -239,9 +239,9 @@ export default function HomePage() {
             <div className="text-center">
               <button
                 onClick={handleReset}
-                className="text-sm text-[var(--mr-text-muted)] hover:text-[var(--mr-gold)] transition-colors
+                className="text-sm text-(--mr-text-muted) hover:text-(--mr-gold) transition-colors
                            underline underline-offset-4
-                           focus:outline-none focus:text-[var(--mr-gold)]"
+                           focus:outline-none focus:text-(--mr-gold)"
               >
                 Analyze another situation
               </button>
@@ -252,7 +252,7 @@ export default function HomePage() {
 
       {/* ── Footer disclaimer ── */}
       <footer className="border-t border-white/5 py-6 px-6">
-        <p className="text-center text-xs text-[var(--mr-text-dim)] max-w-2xl mx-auto leading-relaxed">
+        <p className="text-center text-xs text-(--mr-text-dim) max-w-2xl mx-auto leading-relaxed">
           ⚠️ This tool provides AI-generated emergency triage guidance only. It is{" "}
           <strong>not a substitute</strong> for professional medical advice, diagnosis, or
           treatment. In a real emergency, always call your local emergency services (e.g. 911, 112,
