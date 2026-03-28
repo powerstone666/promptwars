@@ -8,7 +8,7 @@ These services participate in the app's Google-service footprint:
 
 - **Gemini fallback integration** through `ai-provider.ts` when a primary AI provider fails and Gemini is configured
 - **Firestore persistence** through the analyze route when Firebase is available
-- **Firebase Analytics helper** through `main/lib/firebase.ts` when the browser supports Analytics
+- **Firebase Analytics bootstrap support** through `main/lib/firebase.ts` and the app shell when the browser supports Analytics
 - **Google Maps Places API** through nearby-hospital and facility lookup routes
 
 The app does not currently integrate Google People API, Firebase A/B Testing, Remote Config, Messaging, Auth, Storage, App Check, or Performance Monitoring from this service layer.

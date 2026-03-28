@@ -28,8 +28,9 @@ This document separates the Google ecosystem footprint into two clear categories
 ### Firebase Analytics
 
 - A browser-only Analytics helper exists in `lib/firebase.ts`
-- Analytics initialization is gated behind browser support and Firebase configuration
-- This means the repository has explicit support for Google Analytics for Firebase initialization
+- Analytics bootstrap is mounted from `components/firebase-analytics-bootstrap.tsx` in the root layout
+- Initialization is gated behind browser support and Firebase configuration
+- The app now performs a real Firebase Analytics page-view initialization path in supported client environments
 
 ### Google Maps Places
 

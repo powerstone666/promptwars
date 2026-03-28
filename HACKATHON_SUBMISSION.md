@@ -32,7 +32,7 @@
 - **Gemini Fallback**: When configured, Gemini can act as a backup generation path if the primary AI provider fails
 - **Firebase App Config**: The app uses Firebase web configuration for project-level integration
 - **Firestore Persistence**: Triage history can be written to Firestore when Firebase is configured
-- **Firebase Analytics Helper**: Client-safe Analytics initialization is available when the browser/runtime supports it
+- **Firebase Analytics**: Client-safe Analytics initialization is mounted in the app shell when the browser/runtime supports it
 - **Google Maps Places**: Nearby emergency-capable hospitals are looked up through Google Maps Places APIs
 - **Google Maps Geospatial Context**: Maps-based hospital ranking is paired with browser geolocation for local results
 - **Weather API**: Current conditions come from Open-Meteo, not a Google weather service
@@ -108,7 +108,7 @@ The app currently touches the following Google ecosystem services:
 - **Gemini API**: Optional fallback generation path for text, image, and audio-capable requests when configured
 - **Firebase**: Web app configuration bootstrap for the frontend
 - **Firestore**: Stores triage history records from the analyze route when Firebase is available
-- **Firebase Analytics**: A browser-only helper exists for initializing Analytics when the runtime supports it
+- **Firebase Analytics**: A browser-only initialization path exists and is mounted from the app shell when the runtime supports it
 - **Google Maps Places API**: Used by `/api/nearby-hospitals` for emergency-capable facility lookup and ranking
 - **Google Maps Platform keys**: `GOOGLE_MAPS_API_KEY` powers hospital lookup requests
 

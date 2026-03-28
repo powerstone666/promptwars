@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
+import { FirebaseAnalyticsBootstrap } from "@/components/firebase-analytics-bootstrap";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -42,6 +43,7 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} ${plusJakarta.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <FirebaseAnalyticsBootstrap />
         {children}
         <Toaster
           position="top-right"

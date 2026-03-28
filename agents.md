@@ -174,7 +174,7 @@ This project currently integrates the following Google ecosystem services:
 - Stores triage history records from the analyze route when Firebase is configured and available
 
 4. **Firebase Analytics**
-- A browser-only helper exists for initializing Analytics when the runtime supports it
+- A browser-only Analytics initialization path is mounted from the app shell when the runtime supports it
 
 5. **Google Maps Places API**
 - Powers nearby hospital and emergency-capable facility lookup
